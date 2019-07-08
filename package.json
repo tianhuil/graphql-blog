@@ -1,0 +1,19 @@
+{
+  "name": "graphql-blog",
+  "version": "0.0.1",
+  "description": "A typescript blog for graphql",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tianhuil/graphql-blog.git"
+  },
+  "author": "Tianhui Li",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/tianhuil/graphql-blog/issues"
+  },
+  "homepage": "https://github.com/tianhuil/graphql-blog#readme"
+}
