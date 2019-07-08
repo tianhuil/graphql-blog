@@ -7,7 +7,6 @@
     "docker-up": "docker-compose up",
     "docker-down": "docker-compose down",
     "prisma-deploy": "prisma deploy",
-    "prisma-generate": "prisma generate",
     "start": "ts-node src/index.ts"
   },
   "repository": {
