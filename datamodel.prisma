@@ -1,0 +1,18 @@
+type User {
+  id: ID! @unique @id
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+  email: String!
+  password: String!
+  name: String!
+  posts: [Post!]! @relation(name: "PostsByUser")
+}
+
+type Post {
+  id: ID! @unique @id
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+  title: String
+  text: String
+  author: User! @relation(name: "PostsByUser")
+}
