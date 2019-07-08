@@ -4,7 +4,7 @@ type User {
   updatedAt: DateTime! @updatedAt
   email: String!
   password: String!
-  name: String!
+  name: String
   posts: [Post!]! @relation(name: "PostsByUser")
 }
 
