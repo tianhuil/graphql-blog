@@ -1,6 +1,6 @@
 {
   "name": "graphql-blog",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A typescript blog for graphql",
   "main": "index.js",
   "scripts": {
