@@ -14,5 +14,6 @@ type Post {
   updatedAt: DateTime! @updatedAt
   title: String
   text: String
+  published: Boolean! @default(value: false)
   author: User! @relation(name: "PostsByUser")
 }
