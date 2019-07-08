@@ -6,7 +6,8 @@
   "scripts": {
     "docker-up": "docker-compose up",
     "docker-down": "docker-compose down",
-    "prisma-deploy": "prisma deploy"
+    "prisma-deploy": "prisma deploy",
+    "prisma-generate": "prisma generate"
   },
   "repository": {
     "type": "git",
