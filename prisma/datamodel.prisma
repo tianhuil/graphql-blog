@@ -1,5 +1,5 @@
 type User {
-  id: ID! @unique @id
+  id: ID! @id
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt
   email: String!
@@ -9,7 +9,7 @@ type User {
 }
 
 type Post {
-  id: ID! @unique @id
+  id: ID! @id
   createdAt: DateTime! @createdAt
   updatedAt: DateTime! @updatedAt
   title: String
