@@ -18,6 +18,7 @@ async function main() {
         }, {
           title: "B",
           text: "B",
+          published: true,
         }]
       }
     }),
@@ -29,6 +30,7 @@ async function main() {
         create: [{
           title: "C",
           text: "C",
+          published: true,
         }]
       }
     }),
