@@ -1,4 +1,4 @@
-import { prisma } from './generated/prisma-client'
+import { prisma } from '../src/generated/prisma-client'
 
 async function main() {
   console.log("Clear all data ...")

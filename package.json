@@ -7,7 +7,7 @@
     "docker-up": "docker-compose up",
     "docker-down": "docker-compose down",
     "prisma-deploy": "prisma deploy",
-    "initialize": "ts-node src/initialize.ts",
+    "initialize": "ts-node prisma/initialize.ts",
     "start": "ts-node-dev --no-notify --respawn --transpileOnly ./src"
   },
   "repository": {
