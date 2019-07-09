@@ -15,5 +15,5 @@ type Post {
   title: String
   text: String
   published: Boolean! @default(value: false)
-  author: User! @relation(name: "PostsByUser")
+  author: User! @relation(name: "PostsByUser", link: INLINE)
 }

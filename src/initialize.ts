@@ -1,17 +1,43 @@
 import { prisma } from './generated/prisma-client'
 
-// A `main` function so that we can use async/await
 async function main() {
-  // Create a new user called `Alice`
-  const newUser = await prisma.createUser({
-    email: 'alice@example.com',
-    password: 'password'
-  })
-  console.log(`Created new user: ${newUser.name} (ID: ${newUser.id})`)
+  console.log("Clear all data ...")
+  await prisma.deleteManyPosts()  // must clear first so user can be null
+  await prisma.deleteManyUsers()
 
-  // Read all users from the database and print them to the console
-  const allUsers = await prisma.users()
-  console.log(allUsers)
+  console.log("Create new users ...")
+  await Promise.all([
+    prisma.createUser({
+      name: 'Alice',
+      email: 'alice@example.com',
+      password: 'password',
+      posts: {
+        create: [{
+          title: "A",
+          text: "A",
+        }, {
+          title: "B",
+          text: "B",
+        }]
+      }
+    }),
+    prisma.createUser({
+      name: 'Bob',
+      email: 'bob@example.com',
+      password: 'password',
+      posts: {
+        create: [{
+          title: "C",
+          text: "C",
+        }]
+      }
+    }),
+  ])
+
+  console.log("Printing user data ...")
+  console.log(await prisma.users())
+  console.log("Printing post data ...")
+  console.log(await prisma.posts())
 }
 
 main().catch(e => console.error(e))
