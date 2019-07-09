@@ -70,17 +70,6 @@ const Mutation = prismaObjectType({
   }
 })
 
-// type Post {
-//   id: ID! @unique @id
-//   createdAt: DateTime! @createdAt
-//   updatedAt: DateTime! @updatedAt
-//   title: String
-//   text: String
-//   published: Boolean! @default(value: false)
-//   author: User! @relation(name: "PostsByUser")
-// }
-
-
 const User = prismaObjectType({
   name: 'User',
   definition: t => t.prismaFields(['id', 'createdAt', 'name'])
