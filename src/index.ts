@@ -1,31 +1,100 @@
 import * as path from 'path'
 import { GraphQLServer } from 'graphql-yoga'
 import { makePrismaSchema, prismaObjectType } from 'nexus-prisma'
-import { prisma } from './generated/prisma-client'
+import { queryType, idArg, stringArg } from 'nexus'
+import { prisma, Post as PostType, Prisma } from './generated/prisma-client'
 import datamodelInfo from './generated/nexus-prisma'
 
-// @ts-ignore
-const Query = prismaObjectType({
-  name: 'Query',
-  definition: t => t.prismaFields(['*']),
+export interface Ctx {
+  prisma: Prisma
+}
+
+const Query = queryType({
+  definition(t) {
+    t.list.field('feed', {
+      type: 'Post',
+      resolve: (parent, args, ctx: Ctx) => {
+        return ctx.prisma.posts({
+          where: { published: true }
+        })
+      }
+    })
+    
+    t.field('post', {
+      type: 'Post',
+      nullable: true,
+      args: { id: idArg() },
+      resolve: (parent, { id }, ctx: Ctx) => {
+        return ctx.prisma.post({ id })
+      }
+    })
+  }
 })
+
+// @ts-ignore
 const Mutation = prismaObjectType({
   name: 'Mutation',
-  definition: t => t.prismaFields(['*']),
+  definition(t) {
+    t.field('createDraft', {
+      type: 'Post',
+      args: {
+        title: stringArg(),
+        text: stringArg(),
+        authorId: idArg(),
+      },
+      resolve: (parent, { title, text, authorId }, ctx: Ctx) => {
+        return ctx.prisma.createPost({
+          title,
+          text,
+          published: false,
+          author: {
+            connect: { id: authorId }
+          }
+        })
+      }
+    })
+
+    t.field('publishDraft', {
+      type: 'Post',
+      nullable: true,
+      args: { id: idArg() },
+      resolve: (parent, { id }, ctx: Ctx) => {
+        return ctx.prisma.updatePost({
+          where: { id },
+          data: { published: true},
+        })
+      }
+    })
+
+    t.prismaFields(['deletePost'])
+  }
 })
+
+// type Post {
+//   id: ID! @unique @id
+//   createdAt: DateTime! @createdAt
+//   updatedAt: DateTime! @updatedAt
+//   title: String
+//   text: String
+//   published: Boolean! @default(value: false)
+//   author: User! @relation(name: "PostsByUser")
+// }
+
+
 const User = prismaObjectType({
   name: 'User',
   definition: t => t.prismaFields(['id', 'createdAt', 'name'])
 })
+
 const Post = prismaObjectType({
   name: 'Post',
   definition(t) {
-    t.prismaFields([])
+    t.prismaFields(['*'])
   }
 })
 
 const schema = makePrismaSchema({
-  types: [Query, Mutation, User],
+  types: [Query, Mutation, User, Post],
   prisma: {
     datamodelInfo,
     client: prisma,
