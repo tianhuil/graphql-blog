@@ -7,7 +7,6 @@
     "docker-up": "docker-compose up",
     "docker-down": "docker-compose down",
     "prisma-deploy": "prisma deploy",
-    "initialize": "ts-node --transpile-only prisma/initialize.ts",
     "nexus-query": "ts-node --transpile-only src/script/nexus-query.ts",
     "start": "ts-node-dev --no-notify --respawn --transpileOnly ./src"
   },

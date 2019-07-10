@@ -8,3 +8,6 @@ hooks:
 generate:
   - generator: typescript-client
     output: ../src/generated/prisma-client/
+
+seed:
+  run: ts-node --transpile-only prisma/initialize.ts
