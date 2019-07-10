@@ -100,6 +100,6 @@ const server = new GraphQLServer({
 })
 
 server.start(() => {
-  console.log(`Connecting to ${process.env["SERVER"]}/${process.env["SERVICE"]}/${process.env["STAGE"]}`)
+  console.log(`Connecting to ${process.env["ENDPOINT"]}`)
   console.log(`Server is running on http://localhost:4000`)
 })
