@@ -10,4 +10,4 @@ generate:
     output: ../src/generated/prisma-client/
 
 seed:
-  run: ts-node --transpile-only prisma/initialize.ts
+  run: ts-node --transpile-only prisma/seed.ts
