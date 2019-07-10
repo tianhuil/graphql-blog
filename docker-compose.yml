@@ -16,12 +16,10 @@ services:
             user: prisma
             password: prisma
   postgres:
-    image: postgres:10.3
+    image: postgres:10.9
     restart: always
     environment:
       POSTGRES_USER: prisma
       POSTGRES_PASSWORD: prisma
-    volumes:
-      - postgres:/var/lib/postgresql/data
-volumes:
-  postgres: ~
+    tmpfs:
+      - /var/lib/postgresql/data
