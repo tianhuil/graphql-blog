@@ -23,7 +23,7 @@ describe('Test Feed', () => {
   const context = { prisma: mockPrisma }
 
   const variables = {}
-  test('a', async () => {
+  test('Test feed', async () => {
     const { data } = await graphql(schema, query, null, context, variables)
     expect( data ).toEqual({ feed: posts })
   })
