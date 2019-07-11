@@ -26,7 +26,5 @@ describe('Test Feed', () => {
   test('a', async () => {
     const { data } = await graphql(schema, query, null, context, variables)
     expect( data ).toEqual({ feed: posts })
-  
-  }
-  )
+  })
 })
