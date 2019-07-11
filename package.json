@@ -11,7 +11,9 @@
     "prisma-seed": "prisma seed -e env/dev.env",
     "nexus-query": "ts-node --transpile-only src/script/nexus-query.ts",
     "start": "DOTENV_CONFIG_PATH=env/dev.env ts-node-dev -r dotenv/config --no-notify --respawn --transpileOnly ./src",
-    "prisma": "prisma"
+    "prisma": "prisma",
+    "test": "jest test",
+    "unit-test": "jest unit.test"
   },
   "repository": {
     "type": "git",
