@@ -11,7 +11,7 @@ export const Mutation = prismaObjectType({
       args: {
         title: stringArg(),
         text: stringArg(),
-        authorId: idArg(),
+        authorId: idArg({ required: true }),
       },
       resolve: (parent, { title, text, authorId }, ctx: Ctx) => {
         return ctx.prisma.createPost({
@@ -24,6 +24,25 @@ export const Mutation = prismaObjectType({
         });
       },
     });
+
+    t.field("signUp", {
+      type: "User",
+      args: {
+        email: stringArg({ required: true }),
+        password: stringArg({ required: true }),
+        name: stringArg(),
+      },
+      resolve: (parent, { email, password, name }, ctx: Ctx) => {
+        return ctx.prisma.createUser({
+          email,
+          password,
+          name,
+          posts: {
+            create: []
+          }
+        });
+      },
+    })
 
     t.field("publishDraft", {
       type: "Post",

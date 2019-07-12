@@ -6,15 +6,16 @@
   "scripts": {
     "docker-up": "docker-compose up",
     "docker-down": "docker-compose down",
-    "prisma-deploy": "prisma deploy -e env/dev.env",
-    "prisma-generate": "prisma generate -e env/dev.env",
-    "prisma-seed": "prisma seed -e env/dev.env",
+    "deploy-dev": "prisma deploy -e env/dev.env",
+    "generate-dev": "prisma generate -e env/dev.env",
+    "seed-dev": "prisma seed -e env/dev.env",
     "nexus-query": "ts-node --transpile-only src/script/nexus-query.ts",
     "start": "DOTENV_CONFIG_PATH=env/dev.env ts-node-dev -r dotenv/config --no-notify --respawn --transpileOnly ./src",
     "prisma": "prisma",
-    "test": "prisma deploy -e env/test.env && DOTENV_CONFIG_PATH=env/test.env jest test",
+    "test": "DOTENV_CONFIG_PATH=env/test.env jest test",
     "unit-test": "jest unit.test",
-    "int-test": "prisma deploy -e env/test.env && DOTENV_CONFIG_PATH=env/test.env jest int.test"
+    "int-test": "DOTENV_CONFIG_PATH=env/test.env jest int.test",
+    "deploy-test": "prisma deploy -e env/test.env"
   },
   "repository": {
     "type": "git",
