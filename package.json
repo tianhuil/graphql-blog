@@ -13,6 +13,7 @@
     "start": "DOTENV_CONFIG_PATH=env/dev.env ts-node-dev -r dotenv/config --no-notify --respawn --transpileOnly ./src",
     "prisma": "prisma",
     "test": "DOTENV_CONFIG_PATH=env/test.env jest test",
+    "fast-watch-test": "DOTENV_CONFIG_PATH=env/test.env jest test -o --watch",
     "unit-test": "jest unit.test",
     "int-test": "DOTENV_CONFIG_PATH=env/test.env jest int.test",
     "deploy-test": "prisma deploy -e env/test.env"

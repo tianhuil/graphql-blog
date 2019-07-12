@@ -6,25 +6,6 @@ import { Ctx } from "./util"
 export const Mutation = prismaObjectType({
   name: "Mutation",
   definition(t) {
-    t.field("createDraft", {
-      type: "Post",
-      args: {
-        title: stringArg(),
-        text: stringArg(),
-        authorId: idArg({ required: true }),
-      },
-      resolve: (parent, { title, text, authorId }, ctx: Ctx) => {
-        return ctx.prisma.createPost({
-          title,
-          text,
-          published: false,
-          author: {
-            connect: { id: authorId },
-          },
-        });
-      },
-    });
-
     t.field("signUp", {
       type: "User",
       args: {
@@ -43,6 +24,25 @@ export const Mutation = prismaObjectType({
         });
       },
     })
+
+    t.field("createDraft", {
+      type: "Post",
+      args: {
+        title: stringArg(),
+        text: stringArg(),
+        authorId: idArg({ required: true }),
+      },
+      resolve: (parent, { title, text, authorId }, ctx: Ctx) => {
+        return ctx.prisma.createPost({
+          title,
+          text,
+          published: false,
+          author: {
+            connect: { id: authorId },
+          },
+        });
+      },
+    });
 
     t.field("publishDraft", {
       type: "Post",
