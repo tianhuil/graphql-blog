@@ -1,4 +1,4 @@
-import { idArg, stringArg, inputObjectType } from "nexus"
+import { idArg, arg, inputObjectType } from "nexus"
 import { prismaObjectType } from "nexus-prisma"
 import { Ctx } from "./util"
 
@@ -27,13 +27,13 @@ export const Mutation = prismaObjectType({
     t.field("signup", {
       type: "User",
       args: {
-        data: signupInput,
+        data: arg({
+          type: signupInput
+        }),
       },
-      resolve: (_, { data: { email, password, name } }, ctx: Ctx) => {
+      resolve: (_, { data }, ctx: Ctx) => {
         return ctx.prisma.createUser({
-          email,
-          password,
-          name,
+          ...data!,
           posts: {
             create: []
           }
@@ -44,15 +44,17 @@ export const Mutation = prismaObjectType({
     t.field("createDraft", {
       type: "Post",
       args: {
-        data: createDraftInput,
+        data: arg({
+          type: createDraftInput
+        }),
       },
-      resolve: (_, { data: { authorId, text, title } }, ctx: Ctx) => {
+      resolve: (_, { data }, ctx: Ctx) => {
         return ctx.prisma.createPost({
-          title,
-          text,
+          title: data!.title,
+          text: data!.text,
           published: false,
           author: {
-            connect: { id: authorId },
+            connect: { id: data!.authorId },
           },
         });
       },

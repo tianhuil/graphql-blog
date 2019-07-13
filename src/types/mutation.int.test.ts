@@ -11,10 +11,9 @@ describe('Test Mutations', () => {
     name: "Bob"
   }
 
-  const draftData = {
+  const draftPost = {
     title: "Title",
     text: "Text",
-    published: false,
   }
 
   async function queryValidResults(source: string, variables: object): Promise<any> {
@@ -24,7 +23,7 @@ describe('Test Mutations', () => {
     return result.data
   }
 
-  beforeAll(async () => {
+  afterAll(async () => {
     // Must be run in serial for relationship invariant to hold
     prisma.deleteManyPosts()
     prisma.deleteManyUsers()
@@ -55,9 +54,9 @@ describe('Test Mutations', () => {
         title
         published
       }
-    }`, {data: draftData})
+    }`, {data: { ...draftPost, authorId: user.id}})
 
-    expect(createDraftData!.createDraft.title).toEqual("Title")
+    expect(createDraftData!.createDraft.title).toEqual(draftPost.title)
     expect(createDraftData!.createDraft.published).toBe(false)
     const postId = createDraftData!.createDraft.id
     expect( postId ).toBeTruthy()
@@ -65,19 +64,20 @@ describe('Test Mutations', () => {
 
   test('Test Publish Draft', async() => {
     const post = await prisma.createPost({
-      ...draftData,
+      ...draftPost,
+      published: false,
       author: {
         create: userData
       }
     })
 
     const publishDraftData = await queryValidResults(`
-    mutation {
-      publishDraft(id: "${post.id}") {
+    mutation PublishDraft($id: ID) {
+      publishDraft(id: $id) {
         id
         published
       }
-    }`, {})
+    }`, {id: post.id})
 
     expect(publishDraftData.publishDraft.id).toEqual(post.id)
     expect(publishDraftData.publishDraft.published).toEqual(true)
@@ -85,27 +85,27 @@ describe('Test Mutations', () => {
 
   test('Test Delete Draft', async() => {
     const post = await prisma.createPost({
-      ...draftData,
+      ...draftPost,
       author: {
         create: userData
       }
     })
 
     const deletePostData = await queryValidResults(`
-    mutation {
-      deletePost(where: { id: "${post.id}" }) {
+    mutation DeletePost($id: ID) {
+      deletePost(where: { id: $id }) {
         id
       }
-    }`, {})
+    }`, {id: post.id})
 
     expect(deletePostData.deletePost.id).toEqual(post.id)
 
     const postData = await queryValidResults(`
-    query {
-      post(id: "${post.id}") {
+    query Post($id: ID){
+      post(id: $id) {
         id
       }
-    }`, {})
+    }`, {id: post.id})
 
     expect(postData.post).toBeNull()
   })
