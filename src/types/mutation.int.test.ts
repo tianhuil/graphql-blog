@@ -31,18 +31,18 @@ describe('Test Mutations', () => {
     prisma.deleteManyUsers()
   })
 
-  test('Test signUp', async () => {    
-    const signUpData = await queryValidResults(`
+  test('Test signup', async () => {    
+    const signupData = await queryValidResults(`
     mutation {
-      signUp(email: "example@example.com", password: "password", name: "Bob") {
+      signup(email: "example@example.com", password: "password", name: "Bob") {
         id
         createdAt
         name
       }
     }`, {})
 
-    expect(signUpData.signUp.name).toEqual(userData.name)
-    expect(signUpData.signUp.id).toBeTruthy()
+    expect(signupData.signup.name).toEqual(userData.name)
+    expect(signupData.signup.id).toBeTruthy()
   })
 
   test('Test Create Draft', async () => {

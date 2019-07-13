@@ -1,12 +1,11 @@
 import { idArg, stringArg } from "nexus"
 import { prismaObjectType } from "nexus-prisma"
 import { Ctx } from "./util"
-
 // @ts-ignore
 export const Mutation = prismaObjectType({
   name: "Mutation",
   definition(t) {
-    t.field("signUp", {
+    t.field("signup", {
       type: "User",
       args: {
         email: stringArg({ required: true }),
