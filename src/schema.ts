@@ -4,7 +4,7 @@ import { prisma } from './generated/prisma-client'
 import datamodelInfo from './generated/nexus-prisma'
 import {Query, Mutation, User, Post} from './types'
 
-export const schema = makePrismaSchema({
+export const makeSchema = () => makePrismaSchema({
   types: [Query, Mutation, User, Post],
   prisma: {
     datamodelInfo,

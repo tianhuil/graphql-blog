@@ -1,8 +1,10 @@
 import { graphql } from 'graphql'
 
-import { schema } from '../schema'
+import { makeSchema } from '../schema'
 
 describe('Test Feed', () => {
+  const schema = makeSchema()
+
   const query = `
   query {
     feed {

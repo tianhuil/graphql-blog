@@ -1,10 +1,10 @@
 import { GraphQLServer } from 'graphql-yoga'
 import { prisma } from './generated/prisma-client'
 
-import { schema } from './schema'
+import { makeSchema } from './schema'
 
 const server = new GraphQLServer({
-  schema,
+  schema: makeSchema(),
   context: { prisma },
 })
 

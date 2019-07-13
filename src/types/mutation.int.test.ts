@@ -1,9 +1,10 @@
 import { graphql } from 'graphql'
-import { schema } from '../schema'
+import { makeSchema } from '../schema'
 import { prisma } from '../generated/prisma-client'
 
 describe('Test Mutations', () => {
   const context = { prisma }
+  const schema = makeSchema()
 
   const userData = {
     email: "bob@example.com",
