@@ -11,6 +11,15 @@ export const signupInput = inputObjectType({
   },
 })
 
+export const createDraftInput = inputObjectType({
+  name: "createDraftInput",
+  definition(t) {
+    t.string("authorId", { required: true })
+    t.string("text")
+    t.string("title")
+  },
+})
+
 // @ts-ignore
 export const Mutation = prismaObjectType({
   name: "Mutation",
@@ -18,9 +27,9 @@ export const Mutation = prismaObjectType({
     t.field("signup", {
       type: "User",
       args: {
-        data: signupInput
+        data: signupInput,
       },
-      resolve: (parent, {data: { email, password, name }}, ctx: Ctx) => {
+      resolve: (_, { data: { email, password, name } }, ctx: Ctx) => {
         return ctx.prisma.createUser({
           email,
           password,
@@ -35,11 +44,9 @@ export const Mutation = prismaObjectType({
     t.field("createDraft", {
       type: "Post",
       args: {
-        title: stringArg(),
-        text: stringArg(),
-        authorId: idArg({ required: true }),
+        data: createDraftInput,
       },
-      resolve: (parent, { title, text, authorId }, ctx: Ctx) => {
+      resolve: (_, { data: { authorId, text, title } }, ctx: Ctx) => {
         return ctx.prisma.createPost({
           title,
           text,
@@ -55,7 +62,7 @@ export const Mutation = prismaObjectType({
       type: "Post",
       nullable: true,
       args: { id: idArg() },
-      resolve: (parent, { id }, ctx: Ctx) => {
+      resolve: (_, { id }, ctx: Ctx) => {
         return ctx.prisma.updatePost({
           where: { id },
           data: { published: true},

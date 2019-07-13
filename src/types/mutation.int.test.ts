@@ -48,14 +48,14 @@ describe('Test Mutations', () => {
     const user = await prisma.createUser(userData)
 
     const createDraftData = await queryValidResults(`
-    mutation {
-      createDraft(title: "Title", authorId: "${user.id}") {
+    mutation CreateDraft($data: createDraftInput) {
+      createDraft(data: $data) {
         id
         createdAt
         title
         published
       }
-    }`, {})
+    }`, {data: draftData})
 
     expect(createDraftData!.createDraft.title).toEqual("Title")
     expect(createDraftData!.createDraft.published).toBe(false)
