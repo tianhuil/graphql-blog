@@ -1,5 +1,4 @@
 import { graphql } from 'graphql'
-
 import { schema } from '../schema'
 import { prisma } from '../generated/prisma-client'
 
@@ -33,13 +32,13 @@ describe('Test Mutations', () => {
 
   test('Test signup', async () => {    
     const signupData = await queryValidResults(`
-    mutation {
-      signup(email: "example@example.com", password: "password", name: "Bob") {
+    mutation Signup($data: signupInput) {
+      signup(data: $data) {
         id
         createdAt
         name
       }
-    }`, {})
+    }`, {data: userData})
 
     expect(signupData.signup.name).toEqual(userData.name)
     expect(signupData.signup.id).toBeTruthy()

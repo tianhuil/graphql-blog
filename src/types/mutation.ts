@@ -1,6 +1,16 @@
-import { idArg, stringArg } from "nexus"
+import { idArg, stringArg, inputObjectType } from "nexus"
 import { prismaObjectType } from "nexus-prisma"
 import { Ctx } from "./util"
+
+export const signupInput = inputObjectType({
+  name: "signupInput",
+  definition(t) {
+    t.string("email", { required: true })
+    t.string("password", { required: true })
+    t.string("name")
+  },
+})
+
 // @ts-ignore
 export const Mutation = prismaObjectType({
   name: "Mutation",
@@ -8,11 +18,9 @@ export const Mutation = prismaObjectType({
     t.field("signup", {
       type: "User",
       args: {
-        email: stringArg({ required: true }),
-        password: stringArg({ required: true }),
-        name: stringArg(),
+        data: signupInput
       },
-      resolve: (parent, { email, password, name }, ctx: Ctx) => {
+      resolve: (parent, {data: { email, password, name }}, ctx: Ctx) => {
         return ctx.prisma.createUser({
           email,
           password,
