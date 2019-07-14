@@ -11,29 +11,37 @@ describe('Test Mutations', () => {
   const userData = {
     email: "bob@example.com",
     password: "password",
-    name: "Bob"
+    name: "Bob",
   }
+
+  const loginData = (({email, password}) => ({email, password}))(userData)
 
   const draftPost = {
     title: "Title",
     text: "Text",
   }
 
-  async function queryValidResults(source: string, variables: object): Promise<any> {
+  async function queryValidateResults(source: string, variables: object): Promise<any> {
     const result = await graphql(schema, source, null, context, variables)
     expect(result.errors).toBeUndefined()
     expect(result.data).toBeTruthy()
     return result.data
   }
 
-  afterAll(async () => {
+  async function queryExpectError(source: string, variables: object) {
+    const result = await graphql(schema, source, null, context, variables)
+    expect(result.errors).toBeTruthy()
+    expect(result.data).toBeNull()
+  }
+
+  beforeEach(async () => {
     // Must be run in serial for relationship invariant to hold
-    prisma.deleteManyPosts()
-    prisma.deleteManyUsers()
+    await prisma.deleteManyPosts()
+    await prisma.deleteManyUsers()
   })
 
-  test('Test signup', async () => {    
-    const signupData = await queryValidResults(`
+  test('Test signup and login', async () => {    
+    const signupData = await queryValidateResults(`
     mutation Signup($data: SignupInput) {
       signup(data: $data) {
         token
@@ -47,12 +55,31 @@ describe('Test Mutations', () => {
 
     expect(signupData.signup.user.name).toEqual(userData.name)
     expect(signupData.signup.user.id).toBeTruthy()
+
+    const loginQuery = `
+    mutation Login($data: LoginInput) {
+      login(data: $data) {
+        token
+        user {
+          id
+          createdAt
+          name
+        }
+      }
+    }`
+
+    await queryExpectError(
+      loginQuery,
+      {data: { ...loginData, password: "bad password"}}
+    )
+
+    await queryValidateResults(loginQuery, {data: loginData})
   })
 
   test('Test Create Draft', async () => {
     const user = await prisma.createUser(userData)
 
-    const createDraftData = await queryValidResults(`
+    const createDraftData = await queryValidateResults(`
     mutation CreateDraft($data: CreateDraftInput) {
       createDraft(data: $data) {
         id
@@ -77,7 +104,7 @@ describe('Test Mutations', () => {
       }
     })
 
-    const publishDraftData = await queryValidResults(`
+    const publishDraftData = await queryValidateResults(`
     mutation PublishDraft($id: ID) {
       publishDraft(id: $id) {
         id
@@ -97,7 +124,7 @@ describe('Test Mutations', () => {
       }
     })
 
-    const deletePostData = await queryValidResults(`
+    const deletePostData = await queryValidateResults(`
     mutation DeletePost($id: ID) {
       deletePost(where: { id: $id }) {
         id
@@ -106,7 +133,7 @@ describe('Test Mutations', () => {
 
     expect(deletePostData.deletePost.id).toEqual(post.id)
 
-    const postData = await queryValidResults(`
+    const postData = await queryValidateResults(`
     query Post($id: ID){
       post(id: $id) {
         id
