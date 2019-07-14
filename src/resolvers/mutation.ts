@@ -4,12 +4,9 @@ import { prismaObjectType } from "nexus-prisma"
 import { Ctx } from "../types"
 import { SignupInput, CreateDraftInput, AuthPayload, LoginInput } from './types'
 import { User } from '../generated/prisma-client';
-import { Auth } from '../auth';
-
-const auth = new Auth()
 
 const authPayload = (user: User, ctx: Ctx) => ({
-  token: auth.signToken(user.id),
+  token: ctx.auth.signToken(user.id),
   user
 })
 
