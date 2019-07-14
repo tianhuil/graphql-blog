@@ -3,7 +3,7 @@ import 'isomorphic-fetch'
 
 async function main() {
   const client = new ApolloClient({
-    uri: 'http://localhost:4000',
+    uri: process.env["ENDPOINT"],
   })
 
   const result = await client.query({
