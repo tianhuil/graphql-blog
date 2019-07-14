@@ -2,7 +2,7 @@ import * as path from 'path'
 import { makePrismaSchema } from 'nexus-prisma'
 import { prisma } from './generated/prisma-client'
 import datamodelInfo from './generated/nexus-prisma'
-import {Query, Mutation, User, Post} from './types'
+import {Query, Mutation, User, Post} from './resolvers'
 
 export const makeSchema = () => makePrismaSchema({
   types: [Query, Mutation, User, Post],
