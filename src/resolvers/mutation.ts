@@ -1,11 +1,11 @@
 import * as bcrypt from 'bcrypt'
 import { idArg, arg } from "nexus"
 import { prismaObjectType } from "nexus-prisma"
-import { Ctx } from "../types"
+import { Context } from "../context"
 import { SignupInput, CreateDraftInput, AuthPayload, LoginInput } from './types'
 import { User } from '../generated/prisma-client';
 
-const authPayload = (user: User, ctx: Ctx) => ({
+const authPayload = (user: User, ctx: Context) => ({
   token: ctx.auth.signToken(user.id),
   user,
 })
@@ -21,7 +21,7 @@ export const Mutation = prismaObjectType({
           type: SignupInput
         }),
       },
-      resolve: async (_, { data }, ctx: Ctx) => {
+      resolve: async (_, { data }, ctx: Context) => {
         const user = await ctx.prisma.createUser({
           ...data!,
           password: await bcrypt.hash(data!.password, 10),
@@ -41,7 +41,7 @@ export const Mutation = prismaObjectType({
           type: LoginInput
         })
       },
-      resolve: async (_, { data }, ctx: Ctx) => {
+      resolve: async (_, { data }, ctx: Context) => {
         const { email, password } = data!
         const user = await ctx.prisma.user({email})
         if (!user) {
@@ -61,7 +61,7 @@ export const Mutation = prismaObjectType({
           type: CreateDraftInput
         }),
       },
-      resolve: (_, { data }, ctx: Ctx) => {
+      resolve: (_, { data }, ctx: Context) => {
         return ctx.prisma.createPost({
           title: data!.title,
           text: data!.text,
@@ -77,7 +77,7 @@ export const Mutation = prismaObjectType({
       type: "Post",
       nullable: true,
       args: { id: idArg() },
-      resolve: (_, { id }, ctx: Ctx) => {
+      resolve: (_, { id }, ctx: Context) => {
         return ctx.prisma.updatePost({
           where: { id },
           data: { published: true},

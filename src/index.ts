@@ -1,10 +1,10 @@
 import { GraphQLServer } from 'graphql-yoga'
 import { makeSchema } from './schema'
-import { context } from './context'
+import { makeContext } from './context'
 
 const server = new GraphQLServer({
   schema: makeSchema(),
-  context,
+  context: makeContext,
 })
 
 server.start(() => {

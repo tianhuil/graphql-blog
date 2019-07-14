@@ -1,11 +1,11 @@
 import { queryType, idArg } from 'nexus'
-import { Ctx } from '../types'
+import { Context } from '../context'
 
 export const Query = queryType({
   definition(t) {
     t.list.field('feed', {
       type: 'Post',
-      resolve: (parent, args, ctx: Ctx) => {
+      resolve: (parent, args, ctx: Context) => {
         return ctx.prisma.posts({
           where: { published: true }
         })
@@ -16,7 +16,7 @@ export const Query = queryType({
       type: 'Post',
       nullable: true,
       args: { id: idArg() },
-      resolve: (parent, { id }, ctx: Ctx) => {
+      resolve: (parent, { id }, ctx: Context) => {
         return ctx.prisma.post({ id })
       }
     })
