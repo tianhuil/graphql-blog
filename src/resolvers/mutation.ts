@@ -7,7 +7,7 @@ import { User } from '../generated/prisma-client';
 
 const authPayload = (user: User, ctx: Ctx) => ({
   token: ctx.auth.signToken(user.id),
-  user
+  user,
 })
 
 // @ts-ignore
