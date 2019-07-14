@@ -1,23 +1,16 @@
-import { idArg, arg, inputObjectType } from "nexus"
+import * as bcrypt from 'bcrypt'
+import { idArg, arg } from "nexus"
 import { prismaObjectType } from "nexus-prisma"
-import { Ctx } from "./util"
+import { Ctx } from "../types"
+import { SignupInput, CreateDraftInput, AuthPayload, LoginInput } from './types'
+import { User } from '../generated/prisma-client';
+import { Auth } from '../auth';
 
-export const signupInput = inputObjectType({
-  name: "signupInput",
-  definition(t) {
-    t.string("email", { required: true })
-    t.string("password", { required: true })
-    t.string("name")
-  },
-})
+const auth = new Auth()
 
-export const createDraftInput = inputObjectType({
-  name: "createDraftInput",
-  definition(t) {
-    t.string("authorId", { required: true })
-    t.string("text")
-    t.string("title")
-  },
+const authPayload = (user: User, ctx: Ctx) => ({
+  token: auth.signToken(user.id),
+  user
 })
 
 // @ts-ignore
@@ -25,27 +18,50 @@ export const Mutation = prismaObjectType({
   name: "Mutation",
   definition(t) {
     t.field("signup", {
-      type: "User",
+      type: AuthPayload,
       args: {
         data: arg({
-          type: signupInput
+          type: SignupInput
         }),
       },
-      resolve: (_, { data }, ctx: Ctx) => {
-        return ctx.prisma.createUser({
+      resolve: async (_, { data }, ctx: Ctx) => {
+        const user = await ctx.prisma.createUser({
           ...data!,
+          password: await bcrypt.hash(data!.password, 10),
           posts: {
             create: []
           }
         });
+
+        return authPayload(user, ctx)
       },
+    })
+
+    t.field("login", {
+      type: AuthPayload,
+      args: {
+        data: arg({
+          type: LoginInput
+        })
+      },
+      resolve: async (_, { data }, ctx: Ctx) => {
+        const { email, password } = data!
+        const user = await ctx.prisma.user({email})
+        if (!user) {
+          throw Error("Invalid email, password combination")
+        }
+        if (!await bcrypt.compare(password, user.password)) {
+          throw Error("Invalid email, password combination")
+        }
+        return authPayload(user, ctx)
+      }
     })
 
     t.field("createDraft", {
       type: "Post",
       args: {
         data: arg({
-          type: createDraftInput
+          type: CreateDraftInput
         }),
       },
       resolve: (_, { data }, ctx: Ctx) => {

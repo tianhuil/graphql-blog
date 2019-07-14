@@ -1,5 +1,5 @@
 import { queryType, idArg } from 'nexus'
-import { Ctx } from './util'
+import { Ctx } from '../types'
 
 export const Query = queryType({
   definition(t) {

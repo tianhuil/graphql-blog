@@ -32,23 +32,26 @@ describe('Test Mutations', () => {
 
   test('Test signup', async () => {    
     const signupData = await queryValidResults(`
-    mutation Signup($data: signupInput) {
+    mutation Signup($data: SignupInput) {
       signup(data: $data) {
-        id
-        createdAt
-        name
+        token
+        user {
+          id
+          createdAt
+          name
+        }
       }
     }`, {data: userData})
 
-    expect(signupData.signup.name).toEqual(userData.name)
-    expect(signupData.signup.id).toBeTruthy()
+    expect(signupData.signup.user.name).toEqual(userData.name)
+    expect(signupData.signup.user.id).toBeTruthy()
   })
 
   test('Test Create Draft', async () => {
     const user = await prisma.createUser(userData)
 
     const createDraftData = await queryValidResults(`
-    mutation CreateDraft($data: createDraftInput) {
+    mutation CreateDraft($data: CreateDraftInput) {
       createDraft(data: $data) {
         id
         createdAt

@@ -1,11 +1,15 @@
 import { GraphQLServer } from 'graphql-yoga'
 import { prisma } from './generated/prisma-client'
-
+import { Auth } from './auth'
 import { makeSchema } from './schema'
 
 const server = new GraphQLServer({
   schema: makeSchema(),
-  context: { prisma },
+  context: request => ({
+    ...request,
+    prisma,
+    auth: new Auth()
+  }),
 })
 
 server.start(() => {
