@@ -84,7 +84,7 @@ export const Mutation = prismaObjectType({
       },
       resolve: (_, { where }, ctx: Context) => {
         return ctx.prisma.updatePost({
-          where,
+          where: { id: where.id },
           data: { published: true},
         });
       },
