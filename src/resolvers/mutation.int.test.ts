@@ -1,12 +1,10 @@
 import { graphql } from 'graphql'
 import { makeSchema } from '../schema'
 import { prisma } from '../generated/prisma-client'
-import { Auth } from '../auth';
-import { makeContext } from '../context'
-import { ContextParameters } from 'graphql-yoga/dist/types';
+import { mockContext } from '../test-helpers';
 
 describe('Test Mutations', () => {
-  const localContext = makeContext({} as ContextParameters)
+  const context = mockContext()
   const schema = makeSchema()
 
   const userData = {
@@ -23,14 +21,14 @@ describe('Test Mutations', () => {
   }
 
   async function queryValidateResults(source: string, variables: object): Promise<any> {
-    const result = await graphql(schema, source, null, localContext, variables)
+    const result = await graphql(schema, source, null, context, variables)
     expect(result.errors).toBeUndefined()
     expect(result.data).toBeTruthy()
     return result.data
   }
 
   async function queryExpectError(source: string, variables: object) {
-    const result = await graphql(schema, source, null, localContext, variables)
+    const result = await graphql(schema, source, null, context, variables)
     expect(result.errors).toBeTruthy()
     expect(result.data).toBeNull()
   }
