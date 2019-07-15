@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt'
-import { idArg, arg } from "nexus"
+import { idArg, arg, } from "nexus"
 import { prismaObjectType } from "nexus-prisma"
 import { Context } from "../context"
 import { SignupInput, CreateDraftInput, AuthPayload, LoginInput } from './types'
@@ -76,10 +76,15 @@ export const Mutation = prismaObjectType({
     t.field("publishDraft", {
       type: "Post",
       nullable: true,
-      args: { id: idArg() },
-      resolve: (_, { id }, ctx: Context) => {
+      args: {
+        where: arg({
+          type: 'PostWhereUniqueInput',
+          required: true
+        })
+      },
+      resolve: (_, { where }, ctx: Context) => {
         return ctx.prisma.updatePost({
-          where: { id },
+          where,
           data: { published: true},
         });
       },

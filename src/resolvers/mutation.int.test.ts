@@ -105,7 +105,7 @@ describe('Test Mutations', () => {
 
     const publishDraftData = await queryValidateResults(`
     mutation PublishDraft($id: ID) {
-      publishDraft(id: $id) {
+      publishDraft(where: {id: $id}) {
         id
         published
       }
