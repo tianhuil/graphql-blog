@@ -1,6 +1,8 @@
 import { graphql } from 'graphql'
 
 import { makeSchema } from '../schema'
+import { Prisma } from '../generated/prisma-client';
+import { mockContext } from '../test-helpers';
 
 describe('Test Feed', () => {
   const schema = makeSchema()
@@ -18,11 +20,11 @@ describe('Test Feed', () => {
     { text: "b", title: "b" }
   ]
 
-  const mockPrisma = {
-    posts: () => posts
-  }
+  const mockPrisma = ({
+    posts: jest.fn().mockImplementation(() => posts)
+  } as unknown as Prisma)
 
-  const context = { prisma: mockPrisma }
+  const context = mockContext(mockPrisma)
 
   const variables = {}
   test('Test feed', async () => {
