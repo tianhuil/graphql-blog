@@ -1,17 +1,14 @@
-import { graphql } from 'graphql'
-import { makeSchema } from '../schema'
 import { prisma } from '../generated/prisma-client'
-import { mockContext } from '../test-helpers';
+import { mockContext, queryExpectError, queryValidateResults } from '../test-helpers';
 
 describe('Test Mutations', () => {
-  const context = mockContext()
-  const schema = makeSchema()
-
   const userData = {
     email: "bob@example.com",
     password: "password",
     name: "Bob",
   }
+
+  const context = mockContext({})
 
   const loginData = (({email, password}) => ({email, password}))(userData)
 
@@ -20,26 +17,13 @@ describe('Test Mutations', () => {
     text: "Text",
   }
 
-  async function queryValidateResults(source: string, variables: object): Promise<any> {
-    const result = await graphql(schema, source, null, context, variables)
-    expect(result.errors).toBeUndefined()
-    expect(result.data).toBeTruthy()
-    return result.data
-  }
-
-  async function queryExpectError(source: string, variables: object) {
-    const result = await graphql(schema, source, null, context, variables)
-    expect(result.errors).toBeTruthy()
-    expect(result.data).toBeNull()
-  }
-
   beforeEach(async () => {
     // Must be run in serial for relationship invariant to hold
     await prisma.deleteManyPosts()
     await prisma.deleteManyUsers()
   })
 
-  test('Test signup and login', async () => {    
+  test('Test signup and login', async () => {
     const signupData = await queryValidateResults(`
     mutation Signup($data: SignupInput) {
       signup(data: $data) {
@@ -50,7 +34,7 @@ describe('Test Mutations', () => {
           name
         }
       }
-    }`, {data: userData})
+    }`, {data: userData}, context)
 
     expect(signupData.signup.user.name).toEqual(userData.name)
     expect(signupData.signup.user.id).toBeTruthy()
@@ -69,10 +53,44 @@ describe('Test Mutations', () => {
 
     await queryExpectError(
       loginQuery,
-      {data: { ...loginData, password: "bad password"}}
+      {data: { ...loginData, password: "bad password"}},
+      context
     )
 
-    await queryValidateResults(loginQuery, {data: loginData})
+    await queryValidateResults(
+      loginQuery,
+      {data: loginData},
+      context
+    )
+  })
+
+  test('Test signup and me', async () => {
+    const signupData = await queryValidateResults(`
+    mutation Signup($data: SignupInput) {
+      signup(data: $data) {
+        token
+        user {
+          id
+          createdAt
+          name
+        }
+      }
+    }`, {data: userData}, context)
+
+    expect(signupData.signup.user.name).toEqual(userData.name)
+    expect(signupData.signup.user.id).toBeTruthy()
+
+    const meData = await queryValidateResults(`
+      query {
+        me {
+          id
+        }
+      }`,
+      {},
+      mockContext({headers: {'Authorization': `Bearer ${signupData.signup.token}`}})
+    )
+
+    expect(meData.me.id).toEqual(signupData.signup.user.id)
   })
 
   test('Test Create Draft', async () => {
@@ -86,7 +104,7 @@ describe('Test Mutations', () => {
         title
         published
       }
-    }`, {data: { ...draftPost, authorId: user.id}})
+    }`, {data: { ...draftPost, authorId: user.id}}, context)
 
     expect(createDraftData!.createDraft.title).toEqual(draftPost.title)
     expect(createDraftData!.createDraft.published).toBe(false)
@@ -109,7 +127,7 @@ describe('Test Mutations', () => {
         id
         published
       }
-    }`, {id: post.id})
+    }`, {id: post.id}, context)
 
     expect(publishDraftData.publishDraft.id).toEqual(post.id)
     expect(publishDraftData.publishDraft.published).toEqual(true)
@@ -128,7 +146,7 @@ describe('Test Mutations', () => {
       deletePost(where: { id: $id }) {
         id
       }
-    }`, {id: post.id})
+    }`, {id: post.id}, context)
 
     expect(deletePostData.deletePost.id).toEqual(post.id)
 
@@ -137,7 +155,7 @@ describe('Test Mutations', () => {
       post(id: $id) {
         id
       }
-    }`, {id: post.id})
+    }`, {id: post.id}, context)
 
     expect(postData.post).toBeNull()
   })

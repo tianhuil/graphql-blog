@@ -20,5 +20,12 @@ export const Query = queryType({
         return ctx.prisma.post({ id })
       }
     })
+
+    t.field('me', {
+      type: 'User',
+      resolve: (parent, args, ctx: Context) => {
+        return ctx.prisma.user({id : ctx.userId})
+      }
+    })
   }
 })
