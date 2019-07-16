@@ -1,4 +1,4 @@
-import { sign, verify } from 'jsonwebtoken'
+import { sign, verify, JsonWebTokenError } from 'jsonwebtoken'
 
 export interface Token {
   userId: string
@@ -20,7 +20,15 @@ export class Auth {
     return sign({ userId }, this.appSecret)
   }
 
-  verifyToken(tokenString: string): Token {
-    return verify(tokenString, this.appSecret) as Token
+  verifyToken(tokenString: string): Token | null {
+    try {
+      return verify(tokenString, this.appSecret) as Token
+    } catch (e) {
+      if(e instanceof JsonWebTokenError) {
+        return null
+      } else {
+        throw(e)
+      }
+    }
   }
 }
