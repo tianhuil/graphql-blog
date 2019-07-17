@@ -1,4 +1,4 @@
-import { prisma, Post } from '../generated/prisma-client'
+import { prisma } from '../generated/prisma-client'
 import { mockContext, queryExpectError, queryValidateResults } from '../test-helpers';
 import { Auth } from '../lib/auth';
 
