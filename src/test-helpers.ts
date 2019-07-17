@@ -6,6 +6,9 @@ import { Prisma } from "./generated/prisma-client";
 import { makeSchema } from './server/schema'
 import { Auth } from './lib/auth';
 
+const schema = makeSchema()
+const auth = new Auth()
+
 export function mockContext(params: {
   mockPrisma?: Prisma,  // default is actual prisma connection
   headers?: { [_: string]: string },  // headers to be passed in
@@ -16,7 +19,6 @@ export function mockContext(params: {
   const headers = params.headers || {}
 
   if (userId) {
-    const auth = new Auth()
     headers['Authorization'] = `Bearer ${auth.signToken(userId)}`
   }
 
@@ -37,8 +39,6 @@ export function mockContext(params: {
   }
   return context
 }
-
-const schema = makeSchema()
 
 export async function queryValidateResults(
   source: string,
