@@ -1,5 +1,5 @@
 import { sign, verify, JsonWebTokenError } from 'jsonwebtoken'
-import { hash, compare, hashSync } from 'bcrypt'
+import { hash, compare } from 'bcrypt'
 
 export interface Token {
   userId: string
@@ -48,10 +48,6 @@ export class Auth {
 
   async hash(password: string): Promise<string> {
     return hash(password, this.saltRounds)
-  }
-
-  hashSync(password: string): string {
-    return hashSync(password, this.saltRounds)
   }
 
   async compare(password: string, hash: string): Promise<boolean> {

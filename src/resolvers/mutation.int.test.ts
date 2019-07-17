@@ -1,13 +1,11 @@
 import { prisma } from '../generated/prisma-client'
 import { mockContext, queryExpectError, queryValidateResults } from '../test-helpers';
-import { Auth } from '../lib/auth';
 
 describe('Test Mutations', () => {
-  const auth = new Auth()
   
   const userData = {
     email: "bob@example.com",
-    password: auth.hashSync("password"),
+    password: "password",
     name: "Bob",
   }
 
