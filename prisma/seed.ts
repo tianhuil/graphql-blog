@@ -1,17 +1,20 @@
 import { prisma } from '../src/generated/prisma-client'
-import { hash } from 'bcrypt';
+import { Auth } from '../src/lib/auth';
 
 async function main() {
   console.log("Clear all data ...")
-  await prisma.deleteManyPosts()  // must clear first so user can be null
+  // must clear first so user can be null
+  await prisma.deleteManyPosts()  
   await prisma.deleteManyUsers()
+
+  const auth = new Auth()
 
   console.log("Create new users ...")
   await Promise.all([
     prisma.createUser({
       name: 'Alice',
       email: 'alice@example.com',
-      password: await hash('password', 10),
+      password: await auth.hash('password'),
       posts: {
         create: [{
           title: "A",
@@ -26,7 +29,7 @@ async function main() {
     prisma.createUser({
       name: 'Bob',
       email: 'bob@example.com',
-      password: await hash('password', 10),
+      password: await auth.hash('password'),
       posts: {
         create: [{
           title: "C",

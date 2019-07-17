@@ -1,20 +1,19 @@
 import { prisma, Post } from '../generated/prisma-client'
 import { mockContext, queryExpectError, queryValidateResults } from '../test-helpers';
 import { Auth } from '../lib/auth';
-import { hashSync } from 'bcrypt';
 
 describe('Test Mutations', () => {
+  const auth = new Auth()
+  
   const userData = {
     email: "bob@example.com",
-    password: hashSync("password", 10),
+    password: auth.hashSync("password"),
     name: "Bob",
   }
 
   const context = mockContext({})
 
   const loginData = (({email, password}) => ({email, password}))(userData)
-
-  const auth = new Auth()
 
   const draftPost = {
     title: "Title",

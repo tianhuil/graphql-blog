@@ -1,5 +1,4 @@
-import * as bcrypt from 'bcrypt'
-import { idArg, arg, } from "nexus"
+import { arg, } from "nexus"
 import { prismaObjectType } from "nexus-prisma"
 import { Context } from "../server/context"
 import { SignupInput, CreateDraftInput, AuthPayload, LoginInput } from './types'
@@ -24,7 +23,7 @@ export const Mutation = prismaObjectType({
       resolve: async (_, { data }, ctx: Context) => {
         const user = await ctx.prisma.createUser({
           ...data!,
-          password: await bcrypt.hash(data!.password, 10),
+          password: await ctx.auth.hash(data!.password),
           posts: {
             create: []
           }
@@ -47,7 +46,7 @@ export const Mutation = prismaObjectType({
         if (!user) {
           throw Error("Invalid email, password combination")
         }
-        if (!await bcrypt.compare(password, user.password)) {
+        if (!await ctx.auth.compare(password, user.password)) {
           throw Error("Invalid email, password combination")
         }
         return authPayload(user, ctx)
