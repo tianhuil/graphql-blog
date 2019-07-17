@@ -1,6 +1,6 @@
 import { prisma, Post } from '../generated/prisma-client'
 import { mockContext, queryExpectError, queryValidateResults } from '../test-helpers';
-import { Auth } from '../server/auth';
+import { Auth } from '../lib/auth';
 import { hashSync } from 'bcrypt';
 
 describe('Test Mutations', () => {

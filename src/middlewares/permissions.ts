@@ -14,7 +14,6 @@ const isAuthor = rule()(async (parent, args, ctx: Context, info) => {
       id: args.id
     }
   })
-
   return !!posts
 })
 

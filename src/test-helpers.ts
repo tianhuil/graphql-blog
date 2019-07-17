@@ -4,7 +4,7 @@ import { ContextParameters } from "graphql-yoga/dist/types";
 import { makeContext, Context } from "./server/context";
 import { Prisma } from "./generated/prisma-client";
 import { makeSchema } from './server/schema'
-import { Auth } from './server/auth';
+import { Auth } from './lib/auth';
 
 export function mockContext(params: {
   mockPrisma?: Prisma,  // default is actual prisma connection

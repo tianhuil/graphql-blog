@@ -1,5 +1,5 @@
 import { prisma } from '../generated/prisma-client'
-import { Auth } from './auth'
+import { Auth } from '../lib/auth'
 import { ContextParameters } from 'graphql-yoga/dist/types';
 
 export const makeContext = (params: ContextParameters) => {
