@@ -13,7 +13,7 @@
     "generate-dev": "prisma generate -e env/dev.env",
     "nexus-query": "DOTENV_CONFIG_PATH=env/test.env ts-node -r dotenv/config --transpile-only scripts/nexus-query.ts",
     "nexus-deploy": "nexus-prisma-generate --client src/generated/prisma-client --output src/generated/nexus-prisma",
-    "seed-dev": "prisma seed -e env/dev.env",
+    "seed-dev": "DOTENV_CONFIG_PATH=env/dev.env ts-node -r dotenv/config --transpile-only prisma/seed.ts ",
     "start": "DOTENV_CONFIG_PATH=env/dev.env ts-node-dev -r dotenv/config --no-notify --respawn ./src",
     "prisma": "prisma",
     "test": "DOTENV_CONFIG_PATH=env/test.env jest test",
