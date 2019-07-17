@@ -1,16 +1,20 @@
-import { prisma } from '../generated/prisma-client'
+import { prisma, Post } from '../generated/prisma-client'
 import { mockContext, queryExpectError, queryValidateResults } from '../test-helpers';
+import { Auth } from '../server/auth';
+import { hashSync } from 'bcrypt';
 
 describe('Test Mutations', () => {
   const userData = {
     email: "bob@example.com",
-    password: "password",
+    password: hashSync("password", 10),
     name: "Bob",
   }
 
   const context = mockContext({})
 
   const loginData = (({email, password}) => ({email, password}))(userData)
+
+  const auth = new Auth()
 
   const draftPost = {
     title: "Title",
@@ -80,6 +84,16 @@ describe('Test Mutations', () => {
     expect(signupData.signup.user.name).toEqual(userData.name)
     expect(signupData.signup.user.id).toBeTruthy()
 
+    await queryExpectError(`
+      query {
+        me {
+          id
+        }
+      }`,
+      {},
+      context,
+    )
+
     const meData = await queryValidateResults(`
       query {
         me {
@@ -87,7 +101,7 @@ describe('Test Mutations', () => {
         }
       }`,
       {},
-      mockContext({headers: {'Authorization': `Bearer ${signupData.signup.token}`}})
+      mockContext({token: signupData.signup.token})
     )
 
     expect(meData.me.id).toEqual(signupData.signup.user.id)
@@ -104,7 +118,7 @@ describe('Test Mutations', () => {
         title
         published
       }
-    }`, {data: { ...draftPost, authorId: user.id}}, context)
+    }`, {data: { ...draftPost, authorId: user.id}}, mockContext({userId: user.id}))
 
     expect(createDraftData!.createDraft.title).toEqual(draftPost.title)
     expect(createDraftData!.createDraft.published).toBe(false)
@@ -113,11 +127,14 @@ describe('Test Mutations', () => {
   })
 
   test('Test Publish Draft', async() => {
+    const user = await prisma.createUser(userData)
     const post = await prisma.createPost({
       ...draftPost,
       published: false,
       author: {
-        create: userData
+        connect: {
+          id: user.id
+        }
       }
     })
 
@@ -127,17 +144,21 @@ describe('Test Mutations', () => {
         id
         published
       }
-    }`, {id: post.id}, context)
+    }`, {id: post.id}, mockContext({userId: user.id}))
 
     expect(publishDraftData.publishDraft.id).toEqual(post.id)
     expect(publishDraftData.publishDraft.published).toEqual(true)
   })
 
   test('Test Delete Draft', async() => {
+    const user = await prisma.createUser(userData)
     const post = await prisma.createPost({
       ...draftPost,
+      published: false,
       author: {
-        create: userData
+        connect: {
+          id: user.id
+        }
       }
     })
 
@@ -146,17 +167,10 @@ describe('Test Mutations', () => {
       deletePost(where: { id: $id }) {
         id
       }
-    }`, {id: post.id}, context)
+    }`, {id: post.id}, mockContext({userId: user.id}))
 
     expect(deletePostData.deletePost.id).toEqual(post.id)
 
-    const postData = await queryValidateResults(`
-    query Post($id: ID){
-      post(id: $id) {
-        id
-      }
-    }`, {id: post.id}, context)
-
-    expect(postData.post).toBeNull()
+    expect(await prisma.post({id: post.id})).toBeNull()
   })
 })

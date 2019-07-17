@@ -1,11 +1,14 @@
 import * as path from 'path'
 import { makePrismaSchema } from 'nexus-prisma'
+import {applyMiddleware } from 'graphql-middleware'
 import { prisma } from '../generated/prisma-client'
 import datamodelInfo from '../generated/nexus-prisma'
-import {Query, Mutation, User, Post, AuthPayload} from '../resolvers'
+import { types } from '../resolvers'
 
-export const makeSchema = () => makePrismaSchema({
-  types: [Query, Mutation, User, Post, AuthPayload],
+import { middlewares } from '../middlewares/';
+
+export const makeSchema = () => applyMiddleware(makePrismaSchema({
+  types,
   prisma: {
     datamodelInfo,
     client: prisma,
@@ -14,4 +17,4 @@ export const makeSchema = () => makePrismaSchema({
     schema: path.join(__dirname, '../generated/nexus-client/schema.graphql'),
     typegen: path.join(__dirname, '../generated/nexus-client/nexus.ts'),
   },
-})
+}), ...middlewares)

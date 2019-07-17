@@ -6,21 +6,16 @@ const isAuthenticated = rule()(async (parent, args, ctx: Context, info) => {
 })
 
 const isAuthor = rule()(async (parent, args, ctx: Context, info) => {
-  const query = await ctx.prisma.$graphql(`
-  query Post($id: ID ){
-    post(id: $id) {
-      author {
-        id
-      }
+  const posts = await ctx.prisma.posts({
+    where: {
+      author: {
+        id: ctx.userId
+      },
+      id: args.id
     }
-  }
-  `)
+  })
 
-  if (query && query.data && query.data.post && query.data.post.author) {
-    return query.data.post.author.id == ctx.userId
-  } else {
-    return false
-  }
+  return !!posts
 })
 
 const isPublished = rule()(async (parent, args, ctx: Context, info) => {

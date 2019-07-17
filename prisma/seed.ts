@@ -1,4 +1,5 @@
 import { prisma } from '../src/generated/prisma-client'
+import { hash } from 'bcrypt';
 
 async function main() {
   console.log("Clear all data ...")
@@ -10,7 +11,7 @@ async function main() {
     prisma.createUser({
       name: 'Alice',
       email: 'alice@example.com',
-      password: 'password',
+      password: await hash('password', 10),
       posts: {
         create: [{
           title: "A",
@@ -25,7 +26,7 @@ async function main() {
     prisma.createUser({
       name: 'Bob',
       email: 'bob@example.com',
-      password: 'password',
+      password: await hash('password', 10),
       posts: {
         create: [{
           title: "C",

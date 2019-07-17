@@ -4,4 +4,4 @@ import { User } from './user'
 import { Post } from './post'
 import { AuthPayload } from './types'
 
-export {Query, Mutation, User, Post, AuthPayload }
+export const types = [Query, Mutation, User, Post, AuthPayload]
