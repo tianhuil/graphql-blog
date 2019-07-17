@@ -3,11 +3,13 @@ import { makeSchema } from './schema'
 import { makeContext } from './context'
 import { permissions } from './middlewares/permissions'
 
-const server = new GraphQLServer({
+const makeServer = () => new GraphQLServer({
   schema: makeSchema(),
   context: makeContext,
   middlewares: [permissions]
 })
+
+const server = makeServer()
 
 server.start(() => {
   console.log(`Connecting to ${process.env["ENDPOINT"]}`)
