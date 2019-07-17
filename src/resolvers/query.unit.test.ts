@@ -1,6 +1,6 @@
 import { graphql } from 'graphql'
 
-import { makeSchema } from '../schema'
+import { makeSchema } from '../server/schema'
 import { Prisma, prisma } from '../generated/prisma-client';
 import { mockContext } from '../test-helpers';
 

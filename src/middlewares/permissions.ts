@@ -1,5 +1,5 @@
 import { rule, shield, or, allow } from 'graphql-shield'
-import { Context } from '../context';
+import { Context } from '../server/context';
 
 const isAuthenticated = rule()(async (parent, args, ctx: Context, info) => {
   return !!ctx.userId

@@ -1,5 +1,5 @@
 import { queryType, idArg } from 'nexus'
-import { Context } from '../context'
+import { Context } from '../server/context'
 
 export const Query = queryType({
   definition(t) {

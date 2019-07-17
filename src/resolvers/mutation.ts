@@ -1,7 +1,7 @@
 import * as bcrypt from 'bcrypt'
 import { idArg, arg, } from "nexus"
 import { prismaObjectType } from "nexus-prisma"
-import { Context } from "../context"
+import { Context } from "../server/context"
 import { SignupInput, CreateDraftInput, AuthPayload, LoginInput } from './types'
 import { User } from '../generated/prisma-client';
 

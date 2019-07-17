@@ -1,4 +1,4 @@
-import { prisma } from './generated/prisma-client'
+import { prisma } from '../generated/prisma-client'
 import { Auth } from './auth'
 import { ContextParameters } from 'graphql-yoga/dist/types';
 
