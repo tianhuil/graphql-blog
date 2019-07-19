@@ -1,18 +1,44 @@
 import * as hashFunction from 'object-hash'
-import { prisma, Post } from '../generated/prisma-client'
+import { prisma, UserCreateInput } from '../generated/prisma-client'
 import { isAuthenticated, isAuthor, isPublished } from './permissions'
 import { mockContext } from '../test-helpers';
 import { IShieldContext, IOptions } from 'graphql-shield/dist/types';
 import { Rule } from 'graphql-shield/dist/rules';
+import { PostCreateInput } from '../generated/nexus-prisma/nexus-prisma';
 
-describe('Test Permissions', () => {
-  const userData = {
+class TestData {
+  private userIds: string[] = []
+  private postIds: string[] = []
+
+  protected async findCreateUser(userData: UserCreateInput): Promise<string> {
+    const user = await prisma.user({email: userData.email})
+    if (user) {
+      return user.id
+    } else {
+      const user = await prisma.createUser({
+        ...userData
+      })
+      return user.id
+    }
+  }
+
+  protected async createConnectPost(postData: PostCreateInput, userId: string): Promise<string> {
+    const post = await prisma.createPost({
+      ...postData,
+      author: {
+        connect: { id: userId }
+      }
+    })
+    return post.id
+  }
+
+  private userDatum = {
     email: "permissions@example.com",
     password: "password",
     name: "Permissions",
   }
 
-  const postData = [{
+  private postData = [{
     title: "Permissions 1",
     text: "Permissions 1",
     published: false,
@@ -22,29 +48,47 @@ describe('Test Permissions', () => {
     published: true,
   }]
 
-  let userId = ""
-  let postIds: string[] = []
+  async setUp() {
+    this.userIds = [await this.findCreateUser(this.userDatum)]
+    this.postIds = await Promise.all(
+      this.postData.map(
+        postDatum => this.createConnectPost(postDatum, this.userIds[0])
+      )
+    )
+  }
+
+  async tearDown() {
+    await Promise.all(this.postIds.map(id =>
+      prisma.deletePost({id})
+    ))
+    await Promise.all(this.userIds.map(id =>
+      prisma.deletePost({id})
+    ))
+  }
+
+
+  getUserId() {
+    return this.userIds[0]
+  }
+
+  getUnpublishedPostId() {
+    return this.postIds[0]
+  }
+
+  getPublishedPostId() {
+    return this.postIds[1]
+  }
+
+  getPostIds() {
+    return this.postIds
+  }
+}
+
+describe('Test Permissions', () => {
+  const testData = new TestData()
 
   beforeAll(async() => {
-    const user = await prisma.user({email: userData.email})
-    if (user) {
-      userId = user.id
-    } else {
-      const user = await prisma.createUser({
-        ...userData
-      })
-      userId = user.id
-    }
-
-    const posts: Post[] = await Promise.all(
-      postData.map(postDatum => prisma.createPost({
-      ...postDatum,
-      author: {
-        connect: { id: userId }
-      }
-    }))
-  )
-  postIds = posts.map(post => post.id)
+    await testData.setUp()
   })
 
   type ResolverArgs = {
@@ -82,14 +126,14 @@ describe('Test Permissions', () => {
   test('Test isAuthenticated', async() => {
     expect(await applyResolver(isAuthenticated, {})).toBeFalsy()
     expect(await applyResolver(isAuthenticated, { userId: "not the key"})).toBeFalsy()
-    console.log(userId)
-    expect(await applyResolver(isAuthenticated, { userId })).toBeTruthy()
+    expect(await applyResolver(isAuthenticated, { userId: testData.getUserId() })).toBeTruthy()
   })
 
   test('Test isAuthor', async() => {
+    const userId = testData.getUserId()
     expect(await applyResolver(isAuthor, {})).toBeFalsy()
     expect(await applyResolver(isAuthor, { userId })).toBeFalsy()
-    postIds.forEach(async postId => {
+    testData.getPostIds().forEach(async postId => {
       expect(await applyResolver(isAuthor, { postId })).toBeFalsy()
       expect(await applyResolver(isAuthor, { userId, postId })).toBeTruthy()
     })
@@ -97,14 +141,11 @@ describe('Test Permissions', () => {
 
   test('Test isPublished', async() => {
     expect(await applyResolver(isPublished, {})).toBeFalsy()
-    expect(await applyResolver(isPublished, { postId: postIds[0] })).toBeFalsy()
-    expect(await applyResolver(isPublished, { postId: postIds[1] })).toBeTruthy()
+    expect(await applyResolver(isPublished, { postId: testData.getUnpublishedPostId() })).toBeFalsy()
+    expect(await applyResolver(isPublished, { postId: testData.getPublishedPostId() })).toBeTruthy()
   })
 
-  afterAll(async() => {
-    await Promise.all(postIds.map(postId =>
-      prisma.deletePost({id: postId})
-    ))
-    await prisma.deleteUser({id: userId})
+  afterAll(async () => {
+    await testData.tearDown()
   })
 })
