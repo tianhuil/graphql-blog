@@ -21,36 +21,28 @@ describe('Test Permissions', () => {
     published: false,
   }
 
+  let userId = ""
+  let postId = ""
+
   beforeAll(async() => {
     try {
-      await prisma.createUser({
-        ...userData,
-        posts: {
-          create: [postData]
+      const user = await prisma.createUser({
+        ...userData
+      })
+      userId = user.id
+      const post = await prisma.createPost({
+        ...postData,
+        author: {
+          connect: { id: userId }
         }
       })
+      postId = post.id
     } catch(e) {
       // const errMessage = e.errors[0].message
       // "A unique constraint would be violated on User. Details: Field name = email"
       console.warn("User Already exists")
     }
   })
-
-  async function getUser(): Promise<User> {
-    return (await prisma.user({email: userData.email}))!
-  }
-
-  async function getPost(): Promise<Post> {
-    const posts = await prisma.posts({where: {title: postData.title}})
-    return posts[0]
-  }
-
-  async function getUserPost(): Promise<[User, Post]> {
-    return Promise.all([
-      getUser(),
-      getPost(),
-    ])
-  }
 
   type ResolverArgs = {
     userId?: string,
@@ -84,30 +76,21 @@ describe('Test Permissions', () => {
     )
   }
 
-  test('Test User', async() => {
-    const user = await getUser()
-    expect(user).toHaveProperty("name", userData.name)
-    expect(user).toHaveProperty("id")
-  })
-
   test('Test isAuthenticated', async() => {
-    const user = await getUser()
     expect(await applyResolver(isAuthenticated, {})).toBeFalsy()
     expect(await applyResolver(isAuthenticated, { userId: "not the key"})).toBeFalsy()
-    expect(await applyResolver(isAuthenticated, { userId: user.id })).toBeTruthy()
+    expect(await applyResolver(isAuthenticated, { userId })).toBeTruthy()
   })
 
   test('Test isAuthor', async() => {
-    const [user, post] = await getUserPost()
     expect(await applyResolver(isAuthor, {})).toBeFalsy()
-    expect(await applyResolver(isAuthor, { userId: user.id })).toBeFalsy()
-    expect(await applyResolver(isAuthor, { postId: post.id })).toBeFalsy()
-    expect(await applyResolver(isAuthor, { userId: user.id, postId: post.id, })).toBeTruthy()
+    expect(await applyResolver(isAuthor, { userId })).toBeFalsy()
+    expect(await applyResolver(isAuthor, { postId })).toBeFalsy()
+    expect(await applyResolver(isAuthor, { userId, postId, })).toBeTruthy()
   })
 
   afterAll(async() => {
-    const [user, post] = await getUserPost()
-    await prisma.deletePost({id: post.id})
-    await prisma.deleteUser({id: user!.id})
+    await prisma.deletePost({id: postId})
+    await prisma.deleteUser({id: userId})
   })
 })
