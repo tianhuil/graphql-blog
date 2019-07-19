@@ -45,7 +45,24 @@ describe('Test Permissions', () => {
     return posts[0]
   }
 
-  async function applyResolver(resolver: Rule, userId: string | undefined) {
+  async function getUserPost(): Promise<[User, Post]> {
+    return Promise.all([
+      getUser(),
+      getPost(),
+    ])
+  }
+
+  type ResolverArgs = {
+    userId?: string,
+    postId?: string
+  }
+
+  async function applyResolver(
+    resolver: Rule,
+    resolverArgs: ResolverArgs
+  ) {
+    const {userId, postId} = resolverArgs
+
     const shieldContext: IShieldContext = {
       _shield: {
         cache: {},
@@ -53,13 +70,14 @@ describe('Test Permissions', () => {
       }
     }
     const Options: jest.Mock<IOptions> = jest.fn()
-
+    
     const context = {
       ...mockContext({userId}),
       ...shieldContext,
     }
+    const args = postId ? { where: { id: postId } } : {}
 
-    return resolver.resolve({}, {},
+    return resolver.resolve({}, args,
       context,
       {},
       new Options()
@@ -74,16 +92,21 @@ describe('Test Permissions', () => {
 
   test('Test isAuthenticated', async() => {
     const user = await getUser()
-    expect(await applyResolver(isAuthenticated, undefined)).toBeFalsy()
-    expect(await applyResolver(isAuthenticated, "not the key")).toBeFalsy()
-    expect(await applyResolver(isAuthenticated, user.id)).toBeTruthy()
+    expect(await applyResolver(isAuthenticated, {})).toBeFalsy()
+    expect(await applyResolver(isAuthenticated, { userId: "not the key"})).toBeFalsy()
+    expect(await applyResolver(isAuthenticated, { userId: user.id })).toBeTruthy()
+  })
+
+  test('Test isAuthor', async() => {
+    const [user, post] = await getUserPost()
+    expect(await applyResolver(isAuthor, {})).toBeFalsy()
+    expect(await applyResolver(isAuthor, { userId: user.id })).toBeFalsy()
+    expect(await applyResolver(isAuthor, { postId: post.id })).toBeFalsy()
+    expect(await applyResolver(isAuthor, { userId: user.id, postId: post.id, })).toBeTruthy()
   })
 
   afterAll(async() => {
-    const [post, user] = await Promise.all([
-      getPost(),
-      getUser(),
-    ])
+    const [user, post] = await getUserPost()
     await prisma.deletePost({id: post.id})
     await prisma.deleteUser({id: user!.id})
   })
