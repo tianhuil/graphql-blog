@@ -26,18 +26,16 @@ describe('Test Permissions', () => {
   let postIds: string[] = []
 
   beforeAll(async() => {
-    try {
+    const user = await prisma.user({email: userData.email})
+    if (user) {
+      userId = user.id
+    } else {
       const user = await prisma.createUser({
         ...userData
       })
       userId = user.id
-    } catch(e) {
-      const user = await prisma.user({email: userData.email})
-      // const errMessage = e.errors[0].message
-      // "A unique constraint would be violated on User. Details: Field name = email"
-      console.warn("User Already exists")
-      userId = user!.id
     }
+
     const posts: Post[] = await Promise.all(
       postData.map(postDatum => prisma.createPost({
       ...postDatum,
