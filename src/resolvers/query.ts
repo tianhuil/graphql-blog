@@ -23,8 +23,8 @@ export const Query = queryType({
 
     t.field('me', {
       type: 'User',
-      resolve: (parent, args, ctx: Context) => {
-        return ctx.prisma.user({id : ctx.userId})
+      resolve: async (parent, args, ctx: Context) => {
+        return (await ctx.prisma.user({id : ctx.userId}))!
       }
     })
   }
