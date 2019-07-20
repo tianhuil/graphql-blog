@@ -1,4 +1,4 @@
-import { arg, } from "nexus"
+import { arg } from "nexus"
 import { prismaObjectType } from "nexus-prisma"
 import { Context } from "../server/context"
 import { SignupInput, CreateDraftInput, AuthPayload, LoginInput } from './types'

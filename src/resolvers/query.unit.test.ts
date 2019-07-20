@@ -1,7 +1,7 @@
 import { graphql } from 'graphql'
 
 import { makeSchema } from '../server/schema'
-import { Prisma, prisma } from '../generated/prisma-client';
+import { Prisma } from '../generated/prisma-client';
 import { mockContext } from '../test-helpers';
 
 describe('Test Queries', () => {

@@ -1,4 +1,4 @@
-import { queryType, idArg } from 'nexus'
+import { queryType, arg } from 'nexus'
 import { Context } from '../server/context'
 
 export const Query = queryType({
@@ -15,7 +15,12 @@ export const Query = queryType({
     t.field('post', {
       type: 'Post',
       nullable: true,
-      args: { where: 'PostWhereUniqueInput' },
+      args: {
+        where: arg({
+          type: 'PostWhereUniqueInput',
+          required: true,
+        })
+      },
       resolve: (parent, { where }, ctx: Context) => {
         return ctx.prisma.post({ id: where.id })
       }
