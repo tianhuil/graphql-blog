@@ -15,9 +15,9 @@ export const Query = queryType({
     t.field('post', {
       type: 'Post',
       nullable: true,
-      args: { id: idArg() },
-      resolve: (parent, { id }, ctx: Context) => {
-        return ctx.prisma.post({ id })
+      args: { where: 'PostWhereUniqueInput' },
+      resolve: (parent, { where }, ctx: Context) => {
+        return ctx.prisma.post({ id: where.id })
       }
     })
 

@@ -1,37 +1,13 @@
 import * as hashFunction from 'object-hash'
-import { prisma, UserCreateInput } from '../generated/prisma-client'
-import { isAuthenticated, isAuthor, isPublished } from './permissions'
-import { mockContext } from '../test-helpers';
 import { IShieldContext, IOptions } from 'graphql-shield/dist/types';
 import { Rule } from 'graphql-shield/dist/rules';
-import { PostCreateInput } from '../generated/nexus-prisma/nexus-prisma';
 
-class TestData {
-  private userIds: string[] = []
-  private postIds: string[] = []
+import { prisma } from '../generated/prisma-client'
+import { isAuthenticated, isAuthor, isPublished } from './permissions'
+import { mockContext, TestDataBase } from '../test-helpers';
 
-  protected async findCreateUser(userData: UserCreateInput): Promise<string> {
-    const user = await prisma.user({email: userData.email})
-    if (user) {
-      return user.id
-    } else {
-      const user = await prisma.createUser({
-        ...userData
-      })
-      return user.id
-    }
-  }
 
-  protected async createConnectPost(postData: PostCreateInput, userId: string): Promise<string> {
-    const post = await prisma.createPost({
-      ...postData,
-      author: {
-        connect: { id: userId }
-      }
-    })
-    return post.id
-  }
-
+class TestData extends TestDataBase {
   private userDatum = {
     email: "permissions@example.com",
     password: "password",
@@ -52,20 +28,15 @@ class TestData {
     this.userIds = [await this.findCreateUser(this.userDatum)]
     this.postIds = await Promise.all(
       this.postData.map(
-        postDatum => this.createConnectPost(postDatum, this.userIds[0])
+        postDatum => this.createConnectPost({
+          ...postDatum,
+          author: {
+            connect: { id: this.userIds[0] }
+          }
+        })
       )
     )
   }
-
-  async tearDown() {
-    await Promise.all(this.postIds.map(id =>
-      prisma.deletePost({id})
-    ))
-    await Promise.all(this.userIds.map(id =>
-      prisma.deletePost({id})
-    ))
-  }
-
 
   getUserId() {
     return this.userIds[0]
@@ -85,7 +56,7 @@ class TestData {
 }
 
 describe('Test Permissions', () => {
-  const testData = new TestData()
+  const testData = new TestData(prisma)
 
   beforeAll(async() => {
     await testData.setUp()
