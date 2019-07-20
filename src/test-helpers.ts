@@ -62,8 +62,8 @@ export async function queryExpectError(
 }
 
 export abstract class TestDataBase {
-  protected userIds: string[] = []
-  protected postIds: string[] = []
+  protected _userIds: string[] = []
+  protected _postIds: string[] = []
 
   constructor(protected prisma: Prisma) { }
 
@@ -88,10 +88,10 @@ export abstract class TestDataBase {
   abstract async setUp(): Promise<void>
 
   async tearDown() {
-    await Promise.all(this.postIds.map(id =>
+    await Promise.all(this._postIds.map(id =>
       this.prisma.deletePost({id})
     ))
-    await Promise.all(this.userIds.map(id =>
+    await Promise.all(this._userIds.map(id =>
       this.prisma.deletePost({id})
     ))
   }

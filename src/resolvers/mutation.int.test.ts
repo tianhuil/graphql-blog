@@ -7,8 +7,8 @@ describe('Test Login', () => {
     password: "Login",
     name: "Login",
   }
-  const context = mockContext({})
   const loginData = (({email, password}) => ({email, password}))(userData)
+  const context = mockContext({})
 
   beforeEach(async () => {
     await prisma.deleteManyUsers({email: userData.email})
@@ -114,21 +114,21 @@ describe('Test Draft Mutations', () => {
 
   class TestData extends TestDataBase {
     async setUp() {
-      this.userIds = [await this.findCreateUser(userData)]
-      this.postIds = [await this.createConnectPost({
+      this._userIds = [await this.findCreateUser(userData)]
+      this._postIds = [await this.createConnectPost({
         ...draftPost,
         author: {
-          connect: { id: this.userIds[0]}
+          connect: { id: this._userIds[0]}
         }
       })]
     }
 
-    getUserId() {
-      return this.userIds[0]
+    get userId() {
+      return this._userIds[0]
     }
   
-    getPostId() {
-      return this.postIds[0]
+    get postId() {
+      return this._postIds[0]
     }
   }
 
@@ -143,7 +143,7 @@ describe('Test Draft Mutations', () => {
   })
 
   test('Test Create Draft', async () => {
-    const userId = testData.getUserId()
+    const userId = testData.userId
 
     const createdDraftData = await queryValidateResults(`
     mutation CreateDraft($data: CreateDraftInput) {
@@ -162,8 +162,8 @@ describe('Test Draft Mutations', () => {
   })
 
   test('Test Publish Draft', async() => {
-    const userId = testData.getUserId()
-    const postId = testData.getPostId()
+    const userId = testData.userId
+    const postId = testData.postId
 
     const publishDraftData = await queryValidateResults(`
     mutation PublishDraft($id: ID) {
@@ -178,8 +178,8 @@ describe('Test Draft Mutations', () => {
   })
 
   test('Test Delete Draft', async() => {
-    const userId = testData.getUserId()
-    const postId = testData.getPostId()
+    const userId = testData.userId
+    const postId = testData.postId
 
     const deletePostData = await queryValidateResults(`
     mutation DeletePost($id: ID) {

@@ -25,33 +25,33 @@ class TestData extends TestDataBase {
   }]
 
   async setUp() {
-    this.userIds = [await this.findCreateUser(this.userDatum)]
-    this.postIds = await Promise.all(
+    this._userIds = [await this.findCreateUser(this.userDatum)]
+    this._postIds = await Promise.all(
       this.postData.map(
         postDatum => this.createConnectPost({
           ...postDatum,
           author: {
-            connect: { id: this.userIds[0] }
+            connect: { id: this._userIds[0] }
           }
         })
       )
     )
   }
 
-  getUserId() {
-    return this.userIds[0]
+  get userId() {
+    return this._userIds[0]
   }
 
-  getUnpublishedPostId() {
-    return this.postIds[0]
+  get unpublishedPostId() {
+    return this._postIds[0]
   }
 
-  getPublishedPostId() {
-    return this.postIds[1]
+  get publishedPostId() {
+    return this._postIds[1]
   }
 
-  getPostIds() {
-    return this.postIds
+  get postIds() {
+    return this._postIds
   }
 }
 
@@ -97,14 +97,14 @@ describe('Test Permissions', () => {
   test('Test isAuthenticated', async() => {
     expect(await applyResolver(isAuthenticated, {})).toBeFalsy()
     expect(await applyResolver(isAuthenticated, { userId: "not the key"})).toBeFalsy()
-    expect(await applyResolver(isAuthenticated, { userId: testData.getUserId() })).toBeTruthy()
+    expect(await applyResolver(isAuthenticated, { userId: testData.userId })).toBeTruthy()
   })
 
   test('Test isAuthor', async() => {
-    const userId = testData.getUserId()
+    const userId = testData.userId
     expect(await applyResolver(isAuthor, {})).toBeFalsy()
     expect(await applyResolver(isAuthor, { userId })).toBeFalsy()
-    testData.getPostIds().forEach(async postId => {
+    testData.postIds.forEach(async postId => {
       expect(await applyResolver(isAuthor, { postId })).toBeFalsy()
       expect(await applyResolver(isAuthor, { userId, postId })).toBeTruthy()
     })
@@ -112,8 +112,8 @@ describe('Test Permissions', () => {
 
   test('Test isPublished', async() => {
     expect(await applyResolver(isPublished, {})).toBeFalsy()
-    expect(await applyResolver(isPublished, { postId: testData.getUnpublishedPostId() })).toBeFalsy()
-    expect(await applyResolver(isPublished, { postId: testData.getPublishedPostId() })).toBeTruthy()
+    expect(await applyResolver(isPublished, { postId: testData.unpublishedPostId })).toBeFalsy()
+    expect(await applyResolver(isPublished, { postId: testData.publishedPostId })).toBeTruthy()
   })
 
   afterAll(async () => {
