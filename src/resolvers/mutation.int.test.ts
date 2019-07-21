@@ -143,7 +143,7 @@ describe('Test Draft Mutations', () => {
   })
 
   test('Test Create Draft', async () => {
-    const userId = testData.userId
+    const { userId } = testData
 
     const createdDraftData = await queryValidateResults(`
     mutation CreateDraft($data: CreateDraftInput) {
@@ -162,8 +162,7 @@ describe('Test Draft Mutations', () => {
   })
 
   test('Test Publish Draft', async() => {
-    const userId = testData.userId
-    const postId = testData.postId
+    const { userId, postId } = testData
 
     const publishDraftData = await queryValidateResults(`
     mutation PublishDraft($id: ID) {
@@ -178,8 +177,7 @@ describe('Test Draft Mutations', () => {
   })
 
   test('Test Delete Draft', async() => {
-    const userId = testData.userId
-    const postId = testData.postId
+    const { userId, postId } = testData
 
     const deletePostData = await queryValidateResults(`
     mutation DeletePost($id: ID) {
