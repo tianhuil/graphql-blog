@@ -101,7 +101,7 @@ describe('Test Permissions', () => {
   })
 
   test('Test isAuthor', async() => {
-    const userId = testData.userId
+    const { userId } = testData
     expect(await applyResolver(isAuthor, {})).toBeFalsy()
     expect(await applyResolver(isAuthor, { userId })).toBeFalsy()
     testData.postIds.forEach(async postId => {
@@ -111,9 +111,10 @@ describe('Test Permissions', () => {
   })
 
   test('Test isPublished', async() => {
+    const { unpublishedPostId, publishedPostId } = testData
     expect(await applyResolver(isPublished, {})).toBeFalsy()
-    expect(await applyResolver(isPublished, { postId: testData.unpublishedPostId })).toBeFalsy()
-    expect(await applyResolver(isPublished, { postId: testData.publishedPostId })).toBeTruthy()
+    expect(await applyResolver(isPublished, { postId: unpublishedPostId })).toBeFalsy()
+    expect(await applyResolver(isPublished, { postId: publishedPostId })).toBeTruthy()
   })
 
   afterAll(async () => {
