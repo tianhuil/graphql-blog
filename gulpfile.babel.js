@@ -25,44 +25,42 @@ const testType = () => {
   }
 }
 
-const exec = (cmd, options={}) => run(cmd, options)()
-
 gulp.task('docker-up', run("docker-compose up"))
 
 gulp.task('docker-down', run("docker-compose down"))
 
-gulp.task('clear', () => exec(
+gulp.task('clear', () => run(
   `ts-node -r dotenv/config --transpile-only scripts/clear.ts`,
   { env: { DOTENV_CONFIG_PATH: dotenv()}}
 ))
 
-gulp.task('deploy', () => exec(
+gulp.task('deploy', () => run(
   `prisma deploy -e ${dotenv()}`
 ))
 
-gulp.task('generate', () => exec(
+gulp.task('generate', () => run(
   `prisma generate -e ${dotenv()}`
 ))
 
-gulp.task('seed', () => exec(
+gulp.task('seed', () => run(
   `ts-node -r dotenv/config --transpile-only prisma/seed.ts`,
   { env: { DOTENV_CONFIG_PATH: dotenv()} }
 ))
 
-gulp.task('nexus-generate', () => exec(
+gulp.task('nexus-generate', () => run(
   "nexus-prisma-generate --client src/generated/prisma-client --output src/generated/nexus-prisma"
 ))
 
-gulp.task('query', () => exec(
+gulp.task('query', () => run(
   "ts-node --transpile-only scripts/query.ts"
 ))
 
-gulp.task('test', () => exec(
+gulp.task('test', () => run(
   `jest ${testType()} -o --watch`,
   { env: { DOTENV_CONFIG_PATH: TEST_ENV} }
 ))
 
-gulp.task('start', () => exec(
+gulp.task('start', () => run(
   `ts-node-dev -r dotenv/config --no-notify --respawn ./src`,
   { env: { DOTENV_CONFIG_PATH: DEV_ENV} }
 ))
