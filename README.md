@@ -14,8 +14,7 @@ Testing with a database introduces state and be a challenge for concurrency.  Fo
 A helper class (`TestDataBase`) that helps to manage the above process.
 
 ## Todo
-1. Setup prisma-client generation in separate from the server.
-2. Put the task runner into `gulp` instead of the cumbersome npm scripts.
+None, for now.
 
 # To think about
 1. Should we put `graphql-shield` permissions on the nexus definitions?  This would allow for better type checking.
