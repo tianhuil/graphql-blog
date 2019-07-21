@@ -4,7 +4,7 @@ import { Rule } from 'graphql-shield/dist/rules';
 
 import { prisma } from '../generated/prisma-client'
 import { isAuthenticated, isAuthor, isPublished } from './permissions'
-import { mockContext, TestDataBase } from '../test-helpers';
+import { mockContext, TestDataBase } from "../tests"
 
 
 class TestData extends TestDataBase {

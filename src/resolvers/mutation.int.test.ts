@@ -1,5 +1,5 @@
 import { prisma } from '../generated/prisma-client'
-import { mockContext, queryExpectError, queryValidateResults, TestDataBase } from '../test-helpers';
+import { mockContext, TestDataBase, queryExpectError, queryValidateResults } from "../tests"
 
 describe('Test Login', () => {
   const userData = {
