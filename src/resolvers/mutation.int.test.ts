@@ -1,4 +1,4 @@
-import { prisma } from '../generated/prisma-client'
+import { prisma, Prisma } from '../generated/prisma-client'
 import { mockContext, TestDataBase, queryErrorResult, queryValidResults } from "../tests"
 
 describe('Test Login', () => {
@@ -96,31 +96,22 @@ describe('Test Login', () => {
 })
 
 describe('Test Draft Mutations', () => {  
-  const userData = {
-    email: "bob@example.com",
-    password: "password",
-    name: "Bob",
-  }
-
-  const loginData = (({email, password}) => ({email, password}))(userData)
-
-  const draftPost = {
-    title: "Title",
-    text: "Text",
-    published: false,
-  }
-
   const context = mockContext({})
 
   class TestData extends TestDataBase {
-    async setUp() {
-      this._userIds = [await this.findCreateUser(userData)]
-      this._postIds = [await this.createConnectPost({
-        ...draftPost,
-        author: {
-          connect: { id: this._userIds[0]}
-        }
-      })]
+    constructor(prisma: Prisma) {
+      super(
+        prisma,
+        [{
+          email: "bob@example.com",
+          password: "password",
+          name: "Bob",
+        }], [{
+          title: "Title",
+          text: "Text",
+          published: false,
+          authorIndex: 0,
+        }])
     }
 
     get userId() {
@@ -129,6 +120,10 @@ describe('Test Draft Mutations', () => {
   
     get postId() {
       return this._postIds[0]
+    }
+
+    get loginData() {
+      return (({email, password}) => ({email, password}))(this.userData[0])
     }
   }
 
@@ -153,9 +148,9 @@ describe('Test Draft Mutations', () => {
         title
         published
       }
-    }`, {data: { title: draftPost.title }}, mockContext({userId}))
+    }`, {data: { title: testData.postData[0].title }}, mockContext({userId}))
 
-    expect(createdDraftData.createDraft.title).toEqual(draftPost.title)
+    expect(createdDraftData.createDraft.title).toEqual(testData.postData[0].title)
     expect(createdDraftData.createDraft.published).toBe(false)
     const postId = createdDraftData.createDraft.id
     expect( postId ).toBeTruthy()

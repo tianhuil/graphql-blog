@@ -2,39 +2,30 @@ import * as hashFunction from 'object-hash'
 import { IShieldContext, IOptions } from 'graphql-shield/dist/types';
 import { Rule } from 'graphql-shield/dist/rules';
 
-import { prisma } from '../generated/prisma-client'
+import { prisma, Prisma } from '../generated/prisma-client'
 import { isAuthenticated, isAuthor, isPublished } from './permissions'
 import { mockContext, TestDataBase } from "../tests"
 
 
 class TestData extends TestDataBase {
-  private userDatum = {
-    email: "permissions@example.com",
-    password: "password",
-    name: "Permissions",
-  }
-
-  private postData = [{
-    title: "Permissions 1",
-    text: "Permissions 1",
-    published: false,
-  }, {
-    title: "Permissions 2",
-    text: "Permissions 2",
-    published: true,
-  }]
-
-  async setUp() {
-    this._userIds = [await this.findCreateUser(this.userDatum)]
-    this._postIds = await Promise.all(
-      this.postData.map(
-        postDatum => this.createConnectPost({
-          ...postDatum,
-          author: {
-            connect: { id: this._userIds[0] }
-          }
-        })
-      )
+  constructor(prisma: Prisma) {
+    super(
+      prisma, 
+      [{
+        email: "permissions@example.com",
+        password: "password",
+        name: "Permissions",
+      }], [{
+        title: "Permissions 1",
+        text: "Permissions 1",
+        published: false,
+        authorIndex: 0,
+      }, {
+        title: "Permissions 2",
+        text: "Permissions 2",
+        published: true,
+        authorIndex: 0,
+      }]
     )
   }
 
