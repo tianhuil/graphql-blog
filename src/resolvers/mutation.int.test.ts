@@ -153,7 +153,7 @@ describe('Test Draft Mutations', () => {
         title
         published
       }
-    }`, {data: { title: draftPost.title, authorId: userId}}, mockContext({userId}))
+    }`, {data: { title: draftPost.title }}, mockContext({userId}))
 
     expect(createdDraftData!.createDraft.title).toEqual(draftPost.title)
     expect(createdDraftData!.createDraft.published).toBe(false)

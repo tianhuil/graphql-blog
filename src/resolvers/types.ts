@@ -28,7 +28,6 @@ export const LoginInput = inputObjectType({
 export const CreateDraftInput = inputObjectType({
   name: "CreateDraftInput",
   definition(t) {
-    t.string("authorId", { required: true })
     t.string("text")
     t.string("title")
   },

@@ -66,7 +66,7 @@ export const Mutation = prismaObjectType({
           text: data!.text,
           published: false,
           author: {
-            connect: { id: data!.authorId },
+            connect: { id: ctx.userId },
           },
         });
       },
