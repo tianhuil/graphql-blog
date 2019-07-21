@@ -7,6 +7,9 @@
     "type": "git",
     "url": "git+https://github.com/tianhuil/graphql-blog.git"
   },
+  "scripts": {
+    "test": "DOTENV_CONFIG_PATH=env/test.env jest test -o --watch"
+  },
   "author": "Tianhui Li",
   "license": "Apache-2.0",
   "bugs": {
