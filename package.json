@@ -3,24 +3,6 @@
   "version": "0.0.4",
   "description": "A typescript blog for graphql",
   "main": "index.js",
-  "scripts": {
-    "docker-up": "docker-compose up",
-    "docker-down": "docker-compose down",
-    "clear-dev": "DOTENV_CONFIG_PATH=env/dev.env ts-node -r dotenv/config --transpile-only scripts/clear.ts",
-    "clear-test": "DOTENV_CONFIG_PATH=env/test.env ts-node -r dotenv/config --transpile-only scripts/clear.ts",
-    "deploy-dev": "prisma deploy -e env/dev.env",
-    "deploy-test": "prisma deploy -e env/test.env",
-    "generate-dev": "prisma generate -e env/dev.env",
-    "nexus-query": "DOTENV_CONFIG_PATH=env/test.env ts-node -r dotenv/config --transpile-only scripts/nexus-query.ts",
-    "nexus-deploy": "nexus-prisma-generate --client src/generated/prisma-client --output src/generated/nexus-prisma",
-    "seed-dev": "DOTENV_CONFIG_PATH=env/dev.env ts-node -r dotenv/config --transpile-only prisma/seed.ts ",
-    "start": "DOTENV_CONFIG_PATH=env/dev.env ts-node-dev -r dotenv/config --no-notify --respawn ./src",
-    "prisma": "prisma",
-    "test": "DOTENV_CONFIG_PATH=env/test.env jest test",
-    "fast-watch-test": "DOTENV_CONFIG_PATH=env/test.env jest test -o --watch",
-    "unit-test": "jest unit.test",
-    "int-test": "DOTENV_CONFIG_PATH=env/test.env jest int.test"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tianhuil/graphql-blog.git"
@@ -52,6 +34,10 @@
     "@types/jsonwebtoken": "^8.3.2",
     "@types/object-hash": "^1.3.0",
     "apollo-boost": "^0.4.3",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "gulp": "^4.0.2",
+    "gulp-run-command": "0.0.9",
     "isomorphic-fetch": "^2.2.1",
     "jest": "^24.8.0",
     "nexus-prisma-generate": "^0.3.7",
@@ -60,7 +46,8 @@
     "ts-jest": "^24.0.2",
     "ts-node": "^8.3.0",
     "ts-node-dev": "^1.0.0-pre.40",
-    "typescript": "^3.5.2"
+    "typescript": "^3.5.2",
+    "yargs": "^13.3.0"
   },
   "keywords": []
 }
