@@ -67,7 +67,6 @@ export abstract class TestDataBase {
 
   constructor(protected prisma: Prisma) { }
 
-
   protected async findCreateUser(userData: UserCreateInput): Promise<string> {
     const user = await this.prisma.user({email: userData.email})
     if (user) {
