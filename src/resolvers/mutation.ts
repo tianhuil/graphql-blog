@@ -9,6 +9,20 @@ const authPayload = (user: User, ctx: Context) => ({
   user,
 })
 
+class ArgDataError extends Error {
+  constructor(message = "Data field must be supplied") {
+    super(message)
+    Object.setPrototypeOf(this, ArgDataError.prototype)
+  }
+}
+
+class AuthError extends Error {
+  constructor(message = "Invalid email, password combination") {
+    super(message)
+    Object.setPrototypeOf(this, AuthError.prototype)
+  }
+}
+
 // @ts-ignore
 export const Mutation = prismaObjectType({
   name: "Mutation",
@@ -21,9 +35,10 @@ export const Mutation = prismaObjectType({
         }),
       },
       resolve: async (_, { data }, ctx: Context) => {
+        if (!data) { throw new ArgDataError() }
         const user = await ctx.prisma.createUser({
-          ...data!,
-          password: await ctx.auth.hash(data!.password),
+          ...data,
+          password: await ctx.auth.hash(data.password),
           posts: {
             create: []
           }
@@ -41,13 +56,14 @@ export const Mutation = prismaObjectType({
         })
       },
       resolve: async (_, { data }, ctx: Context) => {
-        const { email, password } = data!
+        if (!data) { throw new ArgDataError() }
+        const { email, password } = data
         const user = await ctx.prisma.user({email})
         if (!user) {
-          throw Error("Invalid email, password combination")
+          throw new AuthError()
         }
         if (!await ctx.auth.compare(password, user.password)) {
-          throw Error("Invalid email, password combination")
+          throw new AuthError()
         }
         return authPayload(user, ctx)
       }
@@ -61,9 +77,10 @@ export const Mutation = prismaObjectType({
         }),
       },
       resolve: (_, { data }, ctx: Context) => {
+        if (!data) { throw new ArgDataError() }
         return ctx.prisma.createPost({
-          title: data!.title,
-          text: data!.text,
+          title: data.title,
+          text: data.text,
           published: false,
           author: {
             connect: { id: ctx.userId },

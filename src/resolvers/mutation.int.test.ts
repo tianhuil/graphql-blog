@@ -155,9 +155,9 @@ describe('Test Draft Mutations', () => {
       }
     }`, {data: { title: draftPost.title }}, mockContext({userId}))
 
-    expect(createdDraftData!.createDraft.title).toEqual(draftPost.title)
-    expect(createdDraftData!.createDraft.published).toBe(false)
-    const postId = createdDraftData!.createDraft.id
+    expect(createdDraftData.createDraft.title).toEqual(draftPost.title)
+    expect(createdDraftData.createDraft.published).toBe(false)
+    const postId = createdDraftData.createDraft.id
     expect( postId ).toBeTruthy()
   })
 

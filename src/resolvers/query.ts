@@ -29,7 +29,12 @@ export const Query = queryType({
     t.field('me', {
       type: 'User',
       resolve: async (parent, args, ctx: Context) => {
-        return (await ctx.prisma.user({id : ctx.userId}))!
+        const user = (await ctx.prisma.user({id : ctx.userId}))
+        if (!user) {
+          throw Error("Malformed User")
+        } else {
+          return user
+        }
       }
     })
   }
