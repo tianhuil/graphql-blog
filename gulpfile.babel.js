@@ -3,11 +3,11 @@ import run from 'gulp-run-command'
 import { argv } from 'yargs'
 
 const TEST_ENV = 'env/test.env',
-      DEV_ENV = 'env/dev.env'
+      DEV_ENV  = 'env/dev.env'
 
 const dotenv = () => {
   if (argv.dev) {
-    return TEST_ENV
+    return DEV_ENV
   } else if (argv.test) {
     return TEST_ENV
   } else {
@@ -53,9 +53,8 @@ gulp.task('nexus-generate', () => exec(
   "nexus-prisma-generate --client src/generated/prisma-client --output src/generated/nexus-prisma"
 ))
 
-gulp.task('nexus-query', () => exec(
-  "ts-node -r dotenv/config --transpile-only scripts/nexus-query.ts",
-  { env: { DOTENV_CONFIG_PATH: dotenv()} }
+gulp.task('query', () => exec(
+  "ts-node --transpile-only scripts/query.ts"
 ))
 
 gulp.task('test', () => exec(
