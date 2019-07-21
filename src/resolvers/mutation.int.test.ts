@@ -1,5 +1,5 @@
 import { prisma } from '../generated/prisma-client'
-import { mockContext, TestDataBase, queryExpectError, queryValidateResults } from "../tests"
+import { mockContext, TestDataBase, queryErrorResult, queryValidResults } from "../tests"
 
 describe('Test Login', () => {
   const userData = {
@@ -15,7 +15,7 @@ describe('Test Login', () => {
   })
 
   test('Test signup and login', async () => {
-    const signupData = await queryValidateResults(`
+    const signupData = await queryValidResults(`
     mutation Signup($data: SignupInput) {
       signup(data: $data) {
         token
@@ -42,13 +42,13 @@ describe('Test Login', () => {
       }
     }`
 
-    await queryExpectError(
+    await queryErrorResult(
       loginQuery,
       {data: { ...loginData, password: "bad password"}},
       context
     )
 
-    await queryValidateResults(
+    await queryValidResults(
       loginQuery,
       {data: loginData},
       context
@@ -56,7 +56,7 @@ describe('Test Login', () => {
   })
 
   test('Test signup and me', async () => {
-    const signupData = await queryValidateResults(`
+    const signupData = await queryValidResults(`
     mutation Signup($data: SignupInput) {
       signup(data: $data) {
         token
@@ -71,7 +71,7 @@ describe('Test Login', () => {
     expect(signupData.signup.user.name).toEqual(userData.name)
     expect(signupData.signup.user.id).toBeTruthy()
 
-    await queryExpectError(`
+    await queryErrorResult(`
       query {
         me {
           id
@@ -81,7 +81,7 @@ describe('Test Login', () => {
       context,
     )
 
-    const meData = await queryValidateResults(`
+    const meData = await queryValidResults(`
       query {
         me {
           id
@@ -145,7 +145,7 @@ describe('Test Draft Mutations', () => {
   test('Test Create Draft', async () => {
     const { userId } = testData
 
-    const createdDraftData = await queryValidateResults(`
+    const createdDraftData = await queryValidResults(`
     mutation CreateDraft($data: CreateDraftInput) {
       createDraft(data: $data) {
         id
@@ -164,7 +164,7 @@ describe('Test Draft Mutations', () => {
   test('Test Publish Draft', async() => {
     const { userId, postId } = testData
 
-    const publishDraftData = await queryValidateResults(`
+    const publishDraftData = await queryValidResults(`
     mutation PublishDraft($id: ID) {
       publishDraft(where: {id: $id}) {
         id
@@ -179,7 +179,7 @@ describe('Test Draft Mutations', () => {
   test('Test Delete Draft', async() => {
     const { userId, postId } = testData
 
-    const deletePostData = await queryValidateResults(`
+    const deletePostData = await queryValidResults(`
     mutation DeletePost($id: ID) {
       deletePost(where: { id: $id }) {
         id
