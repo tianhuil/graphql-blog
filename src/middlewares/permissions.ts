@@ -5,7 +5,7 @@ import { PostWhereUniqueInput } from '../generated/nexus-prisma/nexus-prisma';
 
 export const isAuthenticated: Rule = rule()(
   async (parent, args: any, ctx: Context, info): Promise<boolean> => {
-    return (ctx.userId === null) ? false : !!(await ctx.prisma.user({id: ctx.userId}))
+    return (ctx.userId === null) ? false : await ctx.prisma.$exists.user({id: ctx.userId})
   }
 )
 
@@ -17,15 +17,12 @@ export const isAuthor: Rule = rule()(
       return false
     }
 
-    const posts = await ctx.prisma.posts({
-      where: {
-        author: {
-          id: ctx.userId
-        },
-        id: args.where.id
-      }
+    return ctx.prisma.$exists.post({
+      author: {
+        id: ctx.userId
+      },
+      id: args.where.id
     })
-    return !!posts
   }
 )
 
