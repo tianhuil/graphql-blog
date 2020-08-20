@@ -18,7 +18,7 @@
   "homepage": "https://github.com/tianhuil/graphql-blog#readme",
   "_comment": "lodash dependency to fix severe vulnerability",
   "dependencies": {
-    "bcrypt": "3.0.6",
+    "bcrypt": "5.0.0",
     "dotenv": "^8.0.0",
     "graphql": "^14.4.2",
     "graphql-shield": "^6.0.3",
